@@ -7,6 +7,7 @@ import processing.data.JSONObject;
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
 
+import java.awt.*;
 import java.util.*;
 
 public class App extends PApplet {
@@ -62,8 +63,8 @@ public class App extends PApplet {
         frameRate(FPS);
 		//Load the Level First
         JSONArray levelsConfig = loadJSONObject(configPath).getJSONArray("levels");
-        //for (int i = 0; i < levelsConfig.size(); i++){
         for (int i = 0; i < 1; i++){
+//        for (int i = 0; i < levelsConfig.size(); i++){
             JSONObject level = levelsConfig.getJSONObject(i);
             Level l = new Level();
 
