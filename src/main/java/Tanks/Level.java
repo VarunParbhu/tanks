@@ -11,6 +11,7 @@ public class Level {
     private PImage background;
     private String foregroundColour;
     private PImage trees;
+    private Character[][] layoutInput = new Character[20][28];
 
     public void setLayout(String layout) {
         this.layout = layout;
@@ -36,6 +37,13 @@ public class Level {
 
 
         String filePath = layout;
+
+        for (int i = 0; i < layoutInput.length; i++){
+            for (int j = 0; j < layoutInput.length; j++){
+                System.out.printf(String.valueOf(layoutInput[i][j]));
+            }
+        }
+
         try {
             File file = new File(filePath);
             Scanner scanner = new Scanner(file);
