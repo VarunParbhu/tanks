@@ -1,0 +1,31 @@
+Window - 864x640
+    Level - 28x20 Character file - 28rows 20 columns
+    --> 1 Character == 32x32 pixel
+
+Level File
+    - X denotes height of the terrain (X can move)
+    - A,B,C,etc... Player position (Player turn follow alphabetical order
+    - 0,1,2,etc... AI Players
+    - T location of trees, always on top of terrain (they move with terrain)
+    - Ignore empty space
+    - Need to pad file if small
+
+
+Display
+    - For each turn, display and arrow on the current player turn for 2 seconds
+
+
+
+Objects
+ - Game class ?
+ - Level Class
+ - Tank Class
+ - Projectile class
+ - Movement class
+ - Drawing class ??
+    - UI class
+
+
+
+--- Level class ----------------------------------------------------------------------
++ background image
