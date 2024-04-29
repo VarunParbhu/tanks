@@ -7,7 +7,6 @@ import processing.data.JSONObject;
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
 
-import java.awt.*;
 import java.util.*;
 
 public class App extends PApplet {
@@ -28,12 +27,25 @@ public class App extends PApplet {
 
     public String configPath;
 
-    public static Random random = new Random();
+    public Integer currentLevel = 2;
+    public Level currentPlayingLevel=null;
+    public Iterator<Character> currentPlayerIterator = null;
+    public Character currentPlayer = null;
+    public Tank currentTank = null;
+    String currentPlayerText = " ";
+
+    public PImage fuelCan = null;
+    public PImage parachute = null;
+    public PImage windRight = null;
+    public PImage windLeft = null;
+
+
 
     /**
      * Level Attributes
      **/
     public ArrayList<Level> levels = new ArrayList<>();
+    public JSONObject playerColoursConfig;
 
 	// Feel free to add any additional methods or attributes you want. Please put classes in different files.
 
@@ -63,8 +75,9 @@ public class App extends PApplet {
         frameRate(FPS);
 		//Load the Level First
         JSONArray levelsConfig = loadJSONObject(configPath).getJSONArray("levels");
-        for (int i = 0; i < 1; i++){
-//        for (int i = 0; i < levelsConfig.size(); i++){
+        playerColoursConfig = loadJSONObject(configPath).getJSONObject("player_colours");
+
+        for (int i = 0; i < levelsConfig.size(); i++){
             JSONObject level = levelsConfig.getJSONObject(i);
             Level l = new Level();
 
@@ -78,15 +91,35 @@ public class App extends PApplet {
             if (level.hasKey("trees")){
                 //PImage treeIMG = this.loadImage(getClass().getResource(level.getString("trees")).getPath().toLowerCase(Locale.ROOT).replace("%20", " "));
                 PImage treeIMG = this.loadImage(Objects.requireNonNull(getClass().getResource(level.getString("trees"))).getPath().toLowerCase(Locale.ROOT).replace("%20", " "));
-                if (treeIMG != null){l.setTrees(treeIMG);}
+                treeIMG.resize(32,32);
+                l.setTreeSprite(treeIMG);
+            } else {
+                // Setting default tree to be tree1.png if not provided in the config JSON for the level
+                PImage treeIMG = this.loadImage(Objects.requireNonNull(getClass().getResource("tree1.png")).getPath().toLowerCase(Locale.ROOT).replace("%20", " "));
+                treeIMG.resize(32,32);
+                l.setTreeSprite(treeIMG);
             }
-            levels.add(l);
-        }
 
-        
+            l.setPlayerColoursConfig(playerColoursConfig);
+
+            //System.out.println(Objects.requireNonNull(getClass().getResource(level.getString("trees"))).getPath().toLowerCase(Locale.ROOT).replace("%20", " "));
+            levels.add(l);
+
+        }
         //See PApplet javadoc:
         //loadJSONObject(configPath);
 		//loadImage(this.getClass().getResource(filename).getPath().toLowerCase(Locale.ROOT).replace("%20", " "));
+        currentPlayingLevel = levels.get(currentLevel);
+        currentPlayerIterator = currentPlayingLevel.getPlayerTurn().iterator();
+        currentPlayer = currentPlayerIterator.next();
+
+        fuelCan = this.loadImage(Objects.requireNonNull(getClass().getResource("fuel.png")).getPath().toLowerCase(Locale.ROOT).replace("%20", " "));
+        fuelCan.resize(20,20);
+        parachute = this.loadImage(Objects.requireNonNull(getClass().getResource("parachute.png")).getPath().toLowerCase(Locale.ROOT).replace("%20", " "));
+        parachute.resize(20,20);
+        windRight = this.loadImage(Objects.requireNonNull(getClass().getResource("wind.png")).getPath().toLowerCase(Locale.ROOT).replace("%20", " "));
+        windLeft = this.loadImage(Objects.requireNonNull(getClass().getResource("wind-1.png")).getPath().toLowerCase(Locale.ROOT).replace("%20", " "));
+
     }
 
     /**
@@ -94,8 +127,56 @@ public class App extends PApplet {
      */
 	@Override
     public void keyPressed(KeyEvent event){
-        
+        // if you press Spacebar, the turn ends and changes to a new player
+        // Spacebar = 32
+        // Left: 37
+        // Up: 38
+        // Right: 39
+        // Down: 40
+
+        //Spacebar
+        if (this.keyCode==32){
+            if(!currentPlayerIterator.hasNext()){
+                currentPlayerIterator = currentPlayingLevel.getPlayerTurn().iterator();
+            }
+
+            currentPlayingLevel.setWind(currentPlayingLevel.getWind());
+            currentPlayer = currentPlayerIterator.next();
+            currentTank = currentPlayingLevel.getPlayerTanks().get(currentPlayer);
+            System.out.println(currentPlayer);
+        }
+
+        // Left
+        if(this.keyCode==37){
+            currentTank.setX(currentTank.getX()-2);
+        }
+        // Right
+        if(this.keyCode==39){
+            currentTank.setX(currentTank.getX()+2);
+        }
+
+        // Up
+        if(this.keyCode==38){
+            currentTank.setAngle(currentTank.getAngle()- 3.0/ (App.FPS));
+        }
+
+        // Down
+        if(this.keyCode==40){
+            currentTank.setAngle(currentTank.getAngle()+ 3.0/ (App.FPS));
+        }
+
+        // W
+        if(this.keyCode==87){
+
+        }
+
+        // S
+        if(this.keyCode==83){
+
+        }
+
     }
+
 
     /**
      * Receive key released signal from the keyboard.
@@ -123,17 +204,42 @@ public class App extends PApplet {
 	@Override
     public void draw() {
         //Draw Level
-        levels.get(0).draw(this);
+        currentPlayingLevel.draw(this);
+        image(fuelCan,130,15);
+        image(parachute,130,40);
+
+
+        currentTank = currentPlayingLevel.getPlayerTanks().get(currentPlayer);
 
         //----------------------------------
         //display HUD:
         //----------------------------------
         //TODO
 
+        fill(0);
+        textSize(15);
+
+        if(currentPlayer!=null){currentPlayerText = "Player " + currentPlayer + "'s turn";}
+        text(currentPlayerText, 15, 32);
+        text(currentTank.fuel,150,32);
+        text(currentTank.getParachute(),150,57);
+
+        if(currentPlayingLevel.getWind()<=0){
+            image(windLeft,WIDTH-120,0);
+        } else {
+            image(windRight,WIDTH-120,0);
+        }
+
+
+        text(Math.abs(currentPlayingLevel.getWind()),WIDTH-50,36);
         //----------------------------------
         //display scoreboard:
         //----------------------------------
         //TODO
+
+
+
+
         
 		//----------------------------------
         //----------------------------------

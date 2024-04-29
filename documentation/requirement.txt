@@ -20,6 +20,7 @@ Objects
  - Game class ?
  - Level Class
  - Tank Class
+ - Tree Class
  - Projectile class
  - Movement class
  - Drawing class ??
@@ -29,3 +30,5 @@ Objects
 
 --- Level class ----------------------------------------------------------------------
 + background image
++ trees image (set a default if null)
++ set number of players and initialize the tank objects
