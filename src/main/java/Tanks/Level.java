@@ -26,6 +26,7 @@ public class Level {
     private ArrayList<Tree> trees = new ArrayList<>();
     private static Random rand = new Random();
     private JSONObject playerColoursConfig;
+    private ArrayList<Projectile> projectiles = new ArrayList<>();
 
     private Integer wind = rand.nextInt(71)-35;
 
@@ -33,6 +34,12 @@ public class Level {
         this.layoutInput = layoutInput;
         createLevel();
     }
+
+    public void setProjectiles(Projectile projectile) {
+        this.projectiles.add(projectile);
+    }
+
+    public ArrayList<Projectile> getProjectiles() {return projectiles;}
 
     public Integer getWind(){ return wind;}
 
@@ -154,9 +161,9 @@ public class Level {
                         treeCol = (col + 1) * 32 - 16 + rand.nextInt(31) - 15;
                     }
 
-                    treeRow = height[treeCol] - 30;
+                    treeRow = height[treeCol];
 
-                    trees.add(new Tree(this, treeCol - 16, treeRow));
+                    trees.add(new Tree(this, treeCol , treeRow));
                 }
             }
         }
@@ -166,7 +173,7 @@ public class Level {
         for(int col=0;col<layout[0].length; col++) {
             for (int row = 0; row < layout.length; row++) {
                 if (layout[row][col] != null && layout[row][col] != 'X' && layout[row][col] != 'T' && layout[row][col] >='A' && layout[row][col] <='Z') {
-                    playerTanks.put(layout[row][col],new Tank(this, col*32 ,height[col*32]));
+                    playerTanks.put(layout[row][col],new Tank(this, col*32 ,height[col*32],layout[row][col]));
                 }
             }
         }
@@ -193,7 +200,7 @@ public class Level {
         return movingAverages;
     }
 
-    public static Integer[] getRBGValues(String input){
+    public Integer[] getRBGValues(String input){
         Integer[] rgbValues = new Integer[3];
         if(input.equals("random")){
             rgbValues[0] = rand.nextInt(256);
@@ -213,15 +220,27 @@ public class Level {
 
     public void draw(App app){
         app.background(this.background);
-        for (int row = 0; row < screenLayout.length; row++) {
-            for (int col = 0; col < screenLayout[0].length; col++) {
-                if(Objects.equals(screenLayout[row][col], 'X')){
-                    app.fill(foregroudRGBValues[0], foregroudRGBValues[1], foregroudRGBValues[2]);
-                    app.stroke(foregroudRGBValues[0], foregroudRGBValues[1], foregroudRGBValues[2]);
-                    app.rect(col,row,1,640-row);
-                }
-            }
+//        for (int row = 0; row < screenLayout.length; row++) {
+//            for (int col = 0; col < screenLayout[0].length; col++) {
+//                if(Objects.equals(screenLayout[row][col], 'X')){
+//                    app.fill(foregroudRGBValues[0], foregroudRGBValues[1], foregroudRGBValues[2]);
+//                    app.stroke(foregroudRGBValues[0], foregroudRGBValues[1], foregroudRGBValues[2]);
+//                    app.rect(col,row,1,640-row);
+//                }
+//            }
+//        }
+
+
+        for (int col = 0; col < screenLayout[0].length; col++) {
+                app.strokeWeight(1);
+                app.fill(foregroudRGBValues[0], foregroudRGBValues[1], foregroudRGBValues[2]);
+                app.stroke(foregroudRGBValues[0], foregroudRGBValues[1], foregroudRGBValues[2]);
+                app.rect(col,height[col],1,640-height[col]);
         }
+
+
+
+
 
 
 
@@ -229,6 +248,7 @@ public class Level {
         for (Character c : playerTanks.keySet()) {
             Integer[] playerRGG = getRBGValues(playerColoursConfig.getString(c.toString()));
 
+            // Drawing the turret
             app.fill(0,0,0);
             app.stroke(0,0,0);
 //            app.rect(playerTanks.get(c).getX()-1,playerTanks.get(c).getY()-16, 2,10 ,1);
@@ -240,6 +260,7 @@ public class Level {
                     playerTanks.get(c).getY()-6+ (int)(10*cos(playerTanks.get(c).getAngle()))
             );
 
+            // Drawing the tank
             app.strokeWeight(1);
             app.fill(playerRGG[0],playerRGG[1],playerRGG[2]);
             app.stroke(playerRGG[0],playerRGG[1],playerRGG[2]);
@@ -250,7 +271,50 @@ public class Level {
 
         // loop for the tree array and draw them
         for (Tree tree : trees) {
-            app.image(treesSprite,tree.x,tree.y);
+            app.image(treesSprite,tree.x-16,tree.y-32);
+            tree.fall();
+        }
+
+
+        app.strokeWeight(0);
+
+        // loop for the projectiles to draw and explode
+        for (Projectile projectile : projectiles) {
+            Integer[] playerRGG = getRBGValues(playerColoursConfig.getString(projectile.getTankChar()));
+            if(projectile.getActive()){
+                if(!projectile.getExploded()){
+                    if(!projectile.getCollided()){
+
+                        app.fill(playerRGG[0],playerRGG[1],playerRGG[2]);
+                        app.stroke(playerRGG[0],playerRGG[1],playerRGG[2]);
+                        app.ellipse(projectile.getX(),projectile.getY(),5,5);
+
+                        app.fill(0,0,0);
+                        app.stroke(0,0,0);
+                        app.ellipse(projectile.getX(),projectile.getY(),1,1);
+
+                        projectile.move();
+                    } else {
+                        app.fill(255,0,0);
+                        app.stroke(255,0,0);
+                        app.ellipse(projectile.getX(),projectile.getY(), Math.min(projectile.getRadius(),30) ,Math.min(projectile.getRadius(),30));
+
+                        app.fill(255,165,0);
+                        app.stroke(255,165,0);
+                        app.ellipse(projectile.getX(),projectile.getY(), Math.min(projectile.getRadius(),15) ,Math.min(projectile.getRadius(),15));
+
+                        app.fill(255,255,0);
+                        app.stroke(255,255,0);
+                        app.ellipse(projectile.getX(),projectile.getY(), Math.min(projectile.getRadius(),6) ,Math.min(projectile.getRadius(),6));
+
+                        projectile.explode();
+                    }
+                } else {
+                    projectile.levelTerrain();
+    //                projectile.adjustScore(playerTanks);
+                    projectile.setInactive();
+                }
+            }
         }
 
 

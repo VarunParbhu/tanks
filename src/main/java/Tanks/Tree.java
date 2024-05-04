@@ -11,5 +11,10 @@ public class Tree {
         this.y = y;
     }
 
-
+    public void fall (){
+        Integer [] height = level.getHeight();
+        if(height[x]>y){
+            this.y = height[x];
+        }
+    }
 }

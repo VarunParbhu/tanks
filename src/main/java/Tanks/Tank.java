@@ -8,25 +8,29 @@ public class Tank {
     private Level level;
     private Integer x;
     private Integer y;
+    private Character c;
     private double angle = Math.PI/2 + rand.nextDouble()*Math.PI;
     public Integer health;
     public Integer fuel;
-    public Integer power;
+    public double power;
     public Integer parachute;
     public Integer score;
     private boolean turn = false;
 
 
-    public Tank (Level level, Integer x, Integer y){
+    public Tank (Level level, Integer x, Integer y,Character c){
         this.level=level;
         this.x=x;
         this.y=y;
-        this.health=100;
+        this.health=75;
         this.fuel=250;
         this.parachute=3;
         this.power = 50;
         this.score=0;
+        this.c = c;
     }
+
+    public String getC() {return c.toString();}
 
     public Integer getParachute(){return parachute;}
 
@@ -58,9 +62,9 @@ public class Tank {
             this.x = App.WIDTH;
         } else {
             this.x=x;
+            useFuel();
         }
         this.y = level.getHeight()[this.x];
-
     }
     public void setY(Integer y){
         if(y<0){
@@ -81,6 +85,22 @@ public class Tank {
             this.angle = angle;
         }
     }
+
+    public double getPower(){return power;}
+
+    public void setPower(double power){
+        if(power<0){
+            this.power=0;
+        } else if (power>this.health){
+            this.power=this.health;
+        } else {
+            this.power = power;
+        }
+    }
+
+    public Integer getHealth(){return health;}
+
+    public void setHealth(Integer health){this.health=health;}
 
     public void endTurn(){
         turn = false;

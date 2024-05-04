@@ -9,6 +9,9 @@ import processing.event.MouseEvent;
 
 import java.util.*;
 
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+
 public class App extends PApplet {
 
     public static final int CELLSIZE = 32; //8;
@@ -27,7 +30,7 @@ public class App extends PApplet {
 
     public String configPath;
 
-    public Integer currentLevel = 2;
+    public Integer currentLevel = 0;
     public Level currentPlayingLevel=null;
     public Iterator<Character> currentPlayerIterator = null;
     public Character currentPlayer = null;
@@ -38,6 +41,8 @@ public class App extends PApplet {
     public PImage parachute = null;
     public PImage windRight = null;
     public PImage windLeft = null;
+
+    public Integer timer=0;
 
 
 
@@ -136,6 +141,9 @@ public class App extends PApplet {
 
         //Spacebar
         if (this.keyCode==32){
+            currentPlayingLevel.setProjectiles(new Projectile(currentPlayingLevel,currentTank,currentPlayingLevel.getWind()));
+            timer = 0;
+
             if(!currentPlayerIterator.hasNext()){
                 currentPlayerIterator = currentPlayingLevel.getPlayerTurn().iterator();
             }
@@ -143,7 +151,8 @@ public class App extends PApplet {
             currentPlayingLevel.setWind(currentPlayingLevel.getWind());
             currentPlayer = currentPlayerIterator.next();
             currentTank = currentPlayingLevel.getPlayerTanks().get(currentPlayer);
-            System.out.println(currentPlayer);
+
+
         }
 
         // Left
@@ -167,12 +176,12 @@ public class App extends PApplet {
 
         // W
         if(this.keyCode==87){
-
+            currentTank.setPower(currentTank.getPower()+ 36.0/(App.FPS));
         }
 
         // S
         if(this.keyCode==83){
-
+            currentTank.setPower(currentTank.getPower()- 36.0/(App.FPS));
         }
 
     }
@@ -223,6 +232,10 @@ public class App extends PApplet {
         text(currentPlayerText, 15, 32);
         text(currentTank.fuel,150,32);
         text(currentTank.getParachute(),150,57);
+        text("Health:",352,32);
+        text(currentTank.getHealth(),565,32);
+        text("Power:",352,55);
+        text((int)currentTank.getPower(),408,55);
 
         if(currentPlayingLevel.getWind()<=0){
             image(windLeft,WIDTH-120,0);
@@ -230,8 +243,43 @@ public class App extends PApplet {
             image(windRight,WIDTH-120,0);
         }
 
-
         text(Math.abs(currentPlayingLevel.getWind()),WIDTH-50,36);
+
+        this.stroke(0,0,0);
+        this.strokeWeight(4);
+        this.fill(256,256,256);
+        this.rect(410,16,150,20);
+
+        Integer[] playerRGG = currentPlayingLevel.getRBGValues(playerColoursConfig.getString(currentPlayer.toString()));
+        this.stroke(0,0,0);
+        this.strokeWeight(0);
+        this.fill(playerRGG[0], playerRGG[1], playerRGG[2]);
+        float healthDisplay =  (float) (currentTank.getHealth()/100.0 * 150);
+        this.rect(410,16,healthDisplay,20);
+
+
+        this.stroke(128,128,128);
+        this.strokeWeight(4);
+        float powerDisplay =  (float) (currentTank.getPower()/100.0 * 150);
+        this.rect(410,16,powerDisplay,20);
+
+        this.stroke(255,0,0);
+        this.strokeWeight(1);
+
+        this.line(410+powerDisplay,10,410+powerDisplay,42);
+
+
+        // Drawing Arrow
+        this.stroke(0,0,0);
+        this.strokeWeight(2);
+        if(timer<FPS*2){
+            this.line(currentTank.getX(),currentTank.getY()-50,currentTank.getX(),currentTank.getY()-100);
+            this.line(currentTank.getX(),currentTank.getY()-50, (int)((currentTank.getX())-20*sin((float) Math.PI/6)),(int)((currentTank.getY()-50)-20*cos((float) Math.PI/6)));
+            this.line(currentTank.getX(),currentTank.getY()-50, (int)((currentTank.getX())+20*sin((float) Math.PI/6)),(int)((currentTank.getY()-50)-20*cos((float) Math.PI/6)));
+            timer+=1;
+        }
+
+
         //----------------------------------
         //display scoreboard:
         //----------------------------------

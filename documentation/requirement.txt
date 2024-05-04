@@ -17,18 +17,29 @@ Display
 
 
 Objects
- - Game class ?
- - Level Class
- - Tank Class
- - Tree Class
- - Projectile class
- - Movement class
- - Drawing class ??
-    - UI class
++ App class
++ Level Class
++ Tank Class
++ Tree Class
++ Projectile class
 
 
-
---- Level class ----------------------------------------------------------------------
+--- Level ----------------------------------------------------------------------
 + background image
 + trees image (set a default if null)
 + set number of players and initialize the tank objects
++ draw explosion, when very close to the height??
+
+
+--- Tree -----------------------------------------------------------------------
+
+--- Tank -----------------------------------------------------------------------
+
+--- Projectile -----------------------------------------------------------------
++ take the Level variable (at impact) ?
++ Tank projectile owner
++ exploded or not ?? - Boolean one ?
++ getWind (velocity)
++ position (x,y) -> Starts at turret height
++ movement (velocity)
++ draw explosion ??
