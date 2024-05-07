@@ -5,7 +5,7 @@ import static java.lang.Math.sin;
 
 public class Projectile extends LevelObject{
     private Level level;
-    private Tank tank;
+    public Tank tank;
     private boolean exploded = false;
     private boolean collided = false;
     private final Integer wind;
@@ -49,19 +49,24 @@ public class Projectile extends LevelObject{
     public Character getTankChar(){return tank.getPlayer().getPlayerName();}
 
     public void move(){
-        if (!collided) {
-            this.xPos += dx;
-            this.yPos += dy;
-            dx += (float) (wind * 0.03) / App.FPS;
-            dy += (float) 3.6 / App.FPS;
-            x = (int) xPos;
-            y = (int) yPos;
-        }
-        // check if collision happens
-        height= level.getHeight();
-        if( ((int)Math.floor(this.xPos))>=0 && ((int)Math.floor(this.xPos))<App.WIDTH)
-            if(height[(int) Math.floor(this.xPos)]-this.yPos <0){
-            collided = true;
+        if(x<-5 || x>= App.WIDTH+5 || y>=App.HEIGHT+5){
+            this.setInactive();
+        } else {
+
+            if (!collided) {
+                this.xPos += dx;
+                this.yPos += dy;
+                dx += (float) (wind * 0.03) / App.FPS;
+                dy += (float) 3.6 / App.FPS;
+                x = (int) xPos;
+                y = (int) yPos;
+            }
+            // check if collision happens
+            height = level.getHeight();
+            if (((int) Math.floor(this.xPos)) >= 0 && ((int) Math.floor(this.xPos)) < App.WIDTH)
+                if (height[(int) Math.floor(this.xPos)] - this.yPos < 0) {
+                    collided = true;
+                }
         }
     }
 
@@ -118,7 +123,7 @@ public class Projectile extends LevelObject{
     public void draw(App app){
 //        Integer[] playerRGG = level.getRBGValues(App.playerColoursConfig.getString(tank.getPlayer().getPlayerName().toString()));
         int [] playerRGG = tank.player.rgbColors;
-        if(this.getActive()){
+        if(this.isActive()){
             if(!this.getExploded()){
                 if(!this.getCollided()){
 
@@ -148,7 +153,7 @@ public class Projectile extends LevelObject{
                 }
             } else {
                 this.levelTerrain();
-                this.setInactive();
+                this.setInActive();
             }
         }
 

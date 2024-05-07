@@ -1,5 +1,7 @@
 package Tanks;
 
+import java.util.ArrayList;
+
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
@@ -9,16 +11,17 @@ public class Tank extends LevelObject {
     protected double power;
     protected double angle = 3*Math.PI/4.0;
 
-
+    private Projectile opponentP;
     private Integer explosionRadius = 30;
     private Integer radius = 0;
     private boolean exploded = false;
     private boolean isFalling = false;
+    public Integer fallDamage = 0;
 
     public Tank (Level level, Integer x, Integer y,Player player){
         super(level,x,y);
         this.setPlayer(player);
-        this.health=100;
+        this.health=50;
         this.fuel=250;
         this.power = 50;
     }
@@ -73,10 +76,33 @@ public class Tank extends LevelObject {
     public void fall(){
         if(this.y < level.getHeight()[this.x]){
             this.isFalling=true;
+            //get the last inactive projectile
+            if(this.opponentP==null) {
+                ArrayList<Projectile> projectileList = this.level.getProjectiles();
+                int index = projectileList.size() - 1;
+
+
+                while ((this.opponentP==null) && (index > 0)) {
+                    Projectile p = projectileList.get(index);
+
+                    if (Math.abs(p.getX() - this.getX()) <= p.tank.getExplodingRadius() && !p.isActive()) {
+//                        System.out.println(Math.abs(p.getX() - this.getX()));
+//                        System.out.println(Math.abs(p.tank.getExplodingRadius()));
+                        break;
+                    }
+                    index = index - 1;
+                }
+                opponentP =  projectileList.get(index);
+            }
+
             falling();
         } else {
             if(this.isFalling){
                 this.isFalling=false;
+                this.setHealth(-1*fallDamage);
+                this.opponentP.tank.player.setScore(fallDamage);
+                this.opponentP=null;
+                this.fallDamage=0;
                 useParachute();
             }
 
@@ -103,6 +129,8 @@ public class Tank extends LevelObject {
     public void falling(){
         Integer [] height = level.getHeight();
         Player p = App.players.get(player.getPlayerName());
+        // set which projectile caused the fall
+
 
         if(y<0){
             y=0;
@@ -112,6 +140,7 @@ public class Tank extends LevelObject {
             y += 60/App.FPS;
         } else if (height[x]>y && p.getParachute()<=0){
             y += 120/App.FPS;
+            fallDamage += 120/App.FPS;
         } else if (height[x]<y){
             y = height[x];
             explosionRadius = 30;
@@ -160,7 +189,7 @@ public class Tank extends LevelObject {
         }
     }
 
-
+    @Override
     public void draw(App app){
         Player p = App.players.get(player.getPlayerName());
 

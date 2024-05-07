@@ -31,12 +31,15 @@ public class Level {
 
     public void setLayout(String layoutInput) {
         this.layoutInput = layoutInput;
+//        loadLevel();
         createLevel();
     }
 
     public void setProjectiles(Projectile projectile) {
         this.projectiles.add(projectile);
     }
+
+    public ArrayList<Projectile> getProjectiles() {return projectiles;}
 
     public Integer getWind(){ return wind;}
 
@@ -66,6 +69,23 @@ public class Level {
     public TreeSet<Character> getPlayerTurn (){return new TreeSet<>(this.playerTanks.keySet());}
 
     public Map<Character,Tank> getPlayerTanks(){return playerTanks;}
+
+    public void restartLevel(){
+
+        this.projectiles = new ArrayList<>();
+        this.playerTanks = new HashMap<>();
+        this.trees = new ArrayList<>();
+        this.height = new Integer[896];
+        this.screenLayout = new Character[640][896];
+//        loadLevel();
+        createLevel();
+
+    }
+
+//    public void loadLevel(){
+//
+//
+//    }
 
 
 
@@ -191,23 +211,8 @@ public class Level {
         return movingAverages;
     }
 
-//    public Integer[] getRBGValues(String input){
-//        Integer[] rgbValues = new Integer[3];
-//        if(input.equals("random")){
-//            rgbValues[0] = rand.nextInt(256);
-//            rgbValues[1] = rand.nextInt(256);
-//            rgbValues[2] = rand.nextInt(256);
-//        } else {
-//            String[] rgbStringValues = input.split(",");
-//            rgbValues[0] = Integer.valueOf(rgbStringValues[0]);
-//            rgbValues[1] = Integer.valueOf(rgbStringValues[1]);
-//            rgbValues[2] = Integer.valueOf(rgbStringValues[2]);
-//        }
-//        return rgbValues;
-//    }
-
     public void draw(App app){
-        app.background(this.background);
+        app.background(background);
 
         for (int col = 0; col < screenLayout[0].length; col++) {
                 app.strokeWeight(1);

@@ -21,13 +21,13 @@ public class App extends PApplet {
     public static final int BOARD_WIDTH = WIDTH/CELLSIZE;
     public static final int BOARD_HEIGHT = 20;
 
-    public static final int INITIAL_PARACHUTES = 3;
+    public static final int INITIAL_PARACHUTES = 1;
 
-    public static final int FPS = 30;
+    public static final int FPS = 60;
 
     public String configPath;
 
-    public Integer currentLevel = 0;
+    public Integer currentLevel = 2;
     public Level currentPlayingLevel=null;
     public Iterator<Character> currentPlayerIterator = null;
     public Iterator<Character> drawPlayerIterator = null;
@@ -46,8 +46,12 @@ public class App extends PApplet {
     public static PImage windLeftImg = null;
 
     public Integer timer=0;
+    public Integer timer2=0;
+    public Integer index = 0;
 
     private static Random rand = new Random();
+
+    public boolean isGameOver = false;
 
 
 
@@ -234,9 +238,24 @@ public class App extends PApplet {
 
         // R
         if(this.keyCode==82){
-            if(currentTank.player.getScore()>20){
-                currentTank.player.setScore(-20);
-                currentTank.setHealth(20);
+            if(isGameOver){
+                for (Level l : levels){
+                    l.restartLevel();
+                }
+
+                for(Player p : players.values()){
+                    p.resetPlayer();
+                }
+
+                currentLevel=0;
+                currentPlayingLevel = levels.get(currentLevel);
+                isGameOver = false;
+
+            } else {
+                if(currentTank.player.getScore()>20 && currentTank.health!=100){
+                    currentTank.player.setScore(-20);
+                    currentTank.setHealth(20);
+                }
             }
         }
 
@@ -247,7 +266,6 @@ public class App extends PApplet {
                 currentTank.setFuel(200);
             }
         }
-
 
     }
 
@@ -271,6 +289,7 @@ public class App extends PApplet {
     public void mouseReleased(MouseEvent e) {
 
     }
+
 
 
     /**
@@ -354,35 +373,107 @@ public class App extends PApplet {
         //----------------------------------
         //TODO
 
-        this.stroke(0,0,0);
-        this.strokeWeight(3);
-        fill(0);
-        this.line(WIDTH*0.82F,HEIGHT*0.10F,WIDTH*0.99F,HEIGHT*0.10F);
-        text("Scores",WIDTH*0.82F + 4,HEIGHT*0.10F+16);
-        this.line(WIDTH*0.82F,HEIGHT*0.13F,WIDTH*0.99F,HEIGHT*0.13F);
-        float textX = WIDTH*0.82F+4;
-        float textY = HEIGHT*0.13F+16;
+        if(isGameOver){
+            List<Map.Entry<Character, Player>> list = new ArrayList<>(players.entrySet());
+            Comparator<Map.Entry<Character, Player>> comparator = (entry1,entry2) -> entry2.getValue().getScore() - entry1.getValue().getScore();
+            list.sort(comparator);
+            LinkedHashMap<Character, Player> sortedHashMap = new LinkedHashMap<>();
+            for (Map.Entry<Character, Player> entry : list) {
+                sortedHashMap.put(entry.getKey(), entry.getValue());
+            }
 
-        drawPlayerIterator = currentPlayingLevel.getPlayerTurn().iterator();
-        while(drawPlayerIterator.hasNext()){
+            Character firstPlayer = sortedHashMap.keySet().iterator().next();
+            Player pWon = sortedHashMap.get(firstPlayer);
+            // PLayer A win's
+            textSize(20);
+            fill(pWon.rgbColors[0],pWon.rgbColors[1],pWon.rgbColors[2]);
+            text("Player " + firstPlayer + " wins!",350,125);
+
+            int tableHeight = 25*(players.size()+1);
+            int tableWidth = 300;
+
+            fill(pWon.rgbColors[0],pWon.rgbColors[1],pWon.rgbColors[2],50);
+            rect(275,150,tableWidth,tableHeight);
+
             fill(0);
-            Player p = players.get(drawPlayerIterator.next());
-            text(p.getScore(),textX+100,textY);
-            fill(p.rgbColors[0],p.rgbColors[1],p.rgbColors[2]);
-            text("Player " + p.playerName,textX,textY);
-            textY +=20;
+            text("Final Scores",285,172);
+            line(275,178,275+tableWidth,178);
+
+            int drawStartX = 285;
+            int drawStartY = 200;
+
+            Iterator<Player> iterator = sortedHashMap.values().iterator();
+            ArrayList<Player> drawPlayers = new ArrayList<>(sortedHashMap.values());
+
+            Player drawThisPlayerNext = iterator.next();
+            drawPlayers.add(drawThisPlayerNext);
+
+            for(int i = 0;i<=index;i++) {
+                Player p = drawPlayers.get(i);
+                fill(p.rgbColors[0],p.rgbColors[1],p.rgbColors[2]);
+                text("Player " + p.playerName,drawStartX,drawStartY);
+                fill(0);
+                text(p.getScore(),drawStartX+235,drawStartY);
+                drawStartY +=20;
+            }
+
+            timer2++;
+            if(timer2>FPS*0.8){
+                timer2=0;
+                if(index<players.size()-1){
+                    index = index+1;
+                }
+            }
+
+
+            // PLayer A with color and score in black; loop with max first
+
+        } else {
+            this.stroke(0,0,0);
+            this.strokeWeight(3);
+            fill(0);
+            this.line(WIDTH*0.82F,HEIGHT*0.10F,WIDTH*0.99F,HEIGHT*0.10F);
+            text("Scores",WIDTH*0.82F + 4,HEIGHT*0.10F+16);
+            this.line(WIDTH*0.82F,HEIGHT*0.13F,WIDTH*0.99F,HEIGHT*0.13F);
+            float textX = WIDTH*0.82F+4;
+            float textY = HEIGHT*0.13F+16;
+
+            drawPlayerIterator = currentPlayingLevel.getPlayerTurn().iterator();
+            while(drawPlayerIterator.hasNext()){
+                fill(0);
+                Player p = players.get(drawPlayerIterator.next());
+                text(p.getScore(),textX+100,textY);
+                text(p.getScore(),textX+100,textY);
+                fill(p.rgbColors[0],p.rgbColors[1],p.rgbColors[2]);
+                text("Player " + p.playerName,textX,textY);
+                textY +=20;
+            }
+
+            this.line(WIDTH*0.82F,textY-16,WIDTH*0.99F,textY-16);
+
+            this.line(WIDTH*0.82F,HEIGHT*0.10F,WIDTH*0.82F,textY-16);
+            this.line(WIDTH*0.99F,HEIGHT*0.10F,WIDTH*0.99F,textY-16);
         }
 
-        this.line(WIDTH*0.82F,textY-16,WIDTH*0.99F,textY-16);
 
-        this.line(WIDTH*0.82F,HEIGHT*0.10F,WIDTH*0.82F,textY-16);
-        this.line(WIDTH*0.99F,HEIGHT*0.10F,WIDTH*0.99F,textY-16);
-
-        
 		//----------------------------------
         //----------------------------------
 
         //TODO: Check user action
+        int remainingTank=0;
+        for (Tank t : currentPlayingLevel.getPlayerTanks().values()){
+            if(t.isActive()){
+                remainingTank++;
+            }
+        }
+
+        if(remainingTank==1 && currentLevel<2){
+            currentLevel +=1;
+            currentPlayingLevel = levels.get(currentLevel);
+        } else if (remainingTank==1 && currentLevel==2){
+            isGameOver = true;
+        }
+
     }
 
     public static int[] setRBGValues(String input){

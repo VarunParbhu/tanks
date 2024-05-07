@@ -12,6 +12,12 @@ public class Player {
         this.rgbColors = App.setRBGValues(App.playerColoursConfig.getString(playerName.toString()));
     }
 
+    public void resetPlayer(){
+        this.parachute = App.INITIAL_PARACHUTES;
+        score=0;
+        bigProjectile = false;
+    }
+
     public Character getPlayerName() {return playerName;}
 
     public int getParachute() {return parachute;}
