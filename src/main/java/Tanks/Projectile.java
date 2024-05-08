@@ -46,7 +46,7 @@ public class Projectile extends LevelObject{
     public boolean getCollided(){return collided;}
     public boolean getActive(){return active;}
     public void setInactive(){active = false;}
-    public Character getTankChar(){return tank.getPlayer().getPlayerName();}
+    public Character getTankChar(){return tank.getPlayer().playerChar;}
 
     public void move(){
         if(x<-5 || x>= App.WIDTH+5 || y>=App.HEIGHT+5){

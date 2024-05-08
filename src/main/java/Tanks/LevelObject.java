@@ -26,6 +26,7 @@ public abstract class LevelObject {
 
     /**
      * The object's owner: the player.
+     * It can be null and have no owner as well.
      */
     protected Player player;
 

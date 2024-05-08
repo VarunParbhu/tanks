@@ -9,17 +9,16 @@ import java.util.*;
 
 public class Level {
 
-    private static Random rand = new Random();
+    private static final Random rand = new Random();
     private String layoutInput;
     private PImage background;
 
     private int [] foregroundRGBValues;
     private PImage treesSprite;
-    private PImage parachuteSprite;
     private Character[][] layout = new Character[20][28];
     private Character[][] screenLayout = new Character[640][896];
     private Integer [] height = new Integer[896];
-    private Player p;
+
 
 
     private List<LevelObject> allObjects = new ArrayList<>();
@@ -31,7 +30,6 @@ public class Level {
 
     public void setLayout(String layoutInput) {
         this.layoutInput = layoutInput;
-//        loadLevel();
         createLevel();
     }
 
@@ -53,10 +51,6 @@ public class Level {
 
     public void setTreeSprite(PImage trees) {
         this.treesSprite = trees;
-    }
-
-    public void setParachuteSprite(PImage parachute) {
-        this.parachuteSprite = parachute;
     }
 
     public PImage getTreesSprite() {return treesSprite;}
@@ -185,11 +179,10 @@ public class Level {
                         App.players.put(layout[row][col],p);
                         playerTanks.put(layout[row][col],new Tank(this, col*32 ,height[col*32], p));
                     }
-
-
                 }
             }
         }
+
 
     }
 

@@ -1,35 +1,53 @@
 package Tanks;
 
 public class Player {
-    public final Character playerName;
-    private int parachute = App.INITIAL_PARACHUTES;
-    private int score=0;
-    private boolean bigProjectile = false;
+    public final Character playerChar;
     public int [] rgbColors;
 
-    public Player(Character playerName) {
-        this.playerName = playerName;
-        this.rgbColors = App.setRBGValues(App.playerColoursConfig.getString(playerName.toString()));
-    }
+    private int parachute;
+    private int score;
+    private boolean bigProjectile;
 
-    public void resetPlayer(){
-        this.parachute = App.INITIAL_PARACHUTES;
-        score=0;
+    public Player(Character playerChar) {
+        this.playerChar = playerChar;
+        rgbColors = App.setRBGValues(App.playerColoursConfig.getString(playerChar.toString()));
+        parachute = App.initialParachutes;
+        score = 0;
         bigProjectile = false;
     }
 
-    public Character getPlayerName() {return playerName;}
+    public int getParachute() {
+        return parachute;
+    }
 
-    public int getParachute() {return parachute;}
+    public void setParachute(int parachute) {
+        this.parachute = parachute;
+    }
 
-    public void setParachute(int parachute) {this.parachute = parachute;}
+    public int getScore() {
+        return score;
+    }
 
-    public int getScore() {return score;}
+    public void setScore(int score) {
+        this.score += score;
+    }
 
-    public void setScore(int score) {this.score += score;}
+    public void setBigProjectileActive() {
+        this.bigProjectile = true;
+    }
 
-    public void setBigProjectile (boolean bigProjectile) {this.bigProjectile = bigProjectile;}
+    public void setBigProjectileInactive() {
+        this.bigProjectile = false;
+    }
 
-    public boolean isBigProjectile() {return bigProjectile;}
+    public boolean isBigProjectile() {
+        return bigProjectile;
+    }
+
+    public void resetPlayer(){
+        parachute = App.initialParachutes;
+        score=0;
+        bigProjectile = false;
+    }
 
 }

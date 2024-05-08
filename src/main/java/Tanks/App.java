@@ -21,7 +21,7 @@ public class App extends PApplet {
     public static final int BOARD_WIDTH = WIDTH/CELLSIZE;
     public static final int BOARD_HEIGHT = 20;
 
-    public static final int INITIAL_PARACHUTES = 1;
+    public static final int initialParachutes = 1;
 
     public static final int FPS = 60;
 
@@ -47,11 +47,13 @@ public class App extends PApplet {
 
     public Integer timer=0;
     public Integer timer2=0;
+    public Integer timer3=0;
     public Integer index = 0;
 
-    private static Random rand = new Random();
+    private static final Random rand = new Random();
 
-    public boolean isGameOver = false;
+    public static boolean isGameOver = false;
+    public static boolean isLevelOver = false;
 
 
 
@@ -114,8 +116,6 @@ public class App extends PApplet {
 
             PImage parachuteIMG = this.loadImage(Objects.requireNonNull(getClass().getResource("parachute.png")).getPath().toLowerCase(Locale.ROOT).replace("%20", " "));
             parachuteIMG.resize(20,20);
-            l.setParachuteSprite(parachuteIMG);
-
             levels.add(l);
         }
 
@@ -164,7 +164,7 @@ public class App extends PApplet {
         if (this.keyCode==32){
             if (currentTank.isActive()){
                 currentPlayingLevel.setProjectiles(new Projectile(currentPlayingLevel,currentTank,currentPlayingLevel.getWind()));
-                currentTank.player.setBigProjectile(false);
+                currentTank.player.setBigProjectileInactive();
             }
 
             timer = 0;
@@ -182,42 +182,52 @@ public class App extends PApplet {
                 }
             }
 
-
-
             currentPlayer = newiterator.next();
 
             currentPlayingLevel.setWind(currentPlayingLevel.getWind());
             currentTank = currentPlayingLevel.getPlayerTanks().get(currentPlayer);
 
+            if(isLevelOver && currentLevel<2){
+                currentLevel +=1;
+                currentPlayingLevel = levels.get(currentLevel);
+                newiterator = playerrrr.listIterator();
+                currentPlayer = newiterator.next();
+                timer = 0;
+                timer2 = 0;
+                timer3 = 0;
+                isLevelOver = false;
+            }
+
+
         }
 
         // Left
         if(this.keyCode==37){
-            currentTank.setX(currentTank.getX()-2);
+            currentTank.setX(currentTank.getX()-4);
         }
         // Right
         if(this.keyCode==39){
-            currentTank.setX(currentTank.getX()+2);
+            currentTank.setX(currentTank.getX()+4);
         }
 
         // Up
         if(this.keyCode==38){
-            currentTank.setAngle(currentTank.getAngle()- 3.0/ (App.FPS));
+            currentTank.setAngle(currentTank.getAngle() - 3.0/(App.FPS/4.0));
         }
 
         // Down
         if(this.keyCode==40){
-            currentTank.setAngle(currentTank.getAngle()+ 3.0/ (App.FPS));
+            currentTank.setAngle(currentTank.getAngle() + 3.0/(App.FPS/4.0));
         }
 
         // W
         if(this.keyCode==87){
-            currentTank.setPower(currentTank.getPower()+ 36.0/(App.FPS));
+            currentTank.setPower(currentTank.getPower()+ 36.0/(App.FPS/2.0));
         }
 
         // S
         if(this.keyCode==83){
-            currentTank.setPower(currentTank.getPower()- 36.0/(App.FPS));
+            currentTank.setPower(currentTank.getPower()- 36.0/(App.FPS/2.0));
         }
 
         // P
@@ -232,7 +242,7 @@ public class App extends PApplet {
         if(this.keyCode==88){
             if(currentTank.player.getScore()>20 && !currentTank.player.isBigProjectile()){
                 currentTank.player.setScore(-20);
-                currentTank.player.setBigProjectile(true);
+                currentTank.player.setBigProjectileActive();
             }
         }
 
@@ -248,8 +258,15 @@ public class App extends PApplet {
                 }
 
                 currentLevel=0;
+                timer=0;
+                timer2=0;
+                timer3=0;
+                index = 0;
                 currentPlayingLevel = levels.get(currentLevel);
+                newiterator = playerrrr.listIterator();
+                currentPlayer = newiterator.next();
                 isGameOver = false;
+                isLevelOver = false;
 
             } else {
                 if(currentTank.player.getScore()>20 && currentTank.health!=100){
@@ -307,6 +324,16 @@ public class App extends PApplet {
             image(bigboiImg,200,15);
         }
 
+        this.stroke(0,0,0);
+        this.strokeWeight(2);
+        if(timer<FPS*2){
+            this.line(currentTank.getX(),currentTank.getY()-50,currentTank.getX(),currentTank.getY()-100);
+            this.line(currentTank.getX(),currentTank.getY()-50, (int)((currentTank.getX())-20*sin((float) Math.PI/6)),(int)((currentTank.getY()-50)-20*cos((float) Math.PI/6)));
+            this.line(currentTank.getX(),currentTank.getY()-50, (int)((currentTank.getX())+20*sin((float) Math.PI/6)),(int)((currentTank.getY()-50)-20*cos((float) Math.PI/6)));
+            timer+=1;
+        }
+
+
         //----------------------------------
         //display HUD:
         //----------------------------------
@@ -358,14 +385,6 @@ public class App extends PApplet {
 
 
         // Drawing Arrow
-        this.stroke(0,0,0);
-        this.strokeWeight(2);
-        if(timer<FPS*2){
-            this.line(currentTank.getX(),currentTank.getY()-50,currentTank.getX(),currentTank.getY()-100);
-            this.line(currentTank.getX(),currentTank.getY()-50, (int)((currentTank.getX())-20*sin((float) Math.PI/6)),(int)((currentTank.getY()-50)-20*cos((float) Math.PI/6)));
-            this.line(currentTank.getX(),currentTank.getY()-50, (int)((currentTank.getX())+20*sin((float) Math.PI/6)),(int)((currentTank.getY()-50)-20*cos((float) Math.PI/6)));
-            timer+=1;
-        }
 
 
         //----------------------------------
@@ -386,12 +405,14 @@ public class App extends PApplet {
             Player pWon = sortedHashMap.get(firstPlayer);
             // PLayer A win's
             textSize(20);
+            strokeWeight(2);
             fill(pWon.rgbColors[0],pWon.rgbColors[1],pWon.rgbColors[2]);
             text("Player " + firstPlayer + " wins!",350,125);
 
             int tableHeight = 25*(players.size()+1);
             int tableWidth = 300;
-
+            stroke(0);
+            strokeWeight(2);
             fill(pWon.rgbColors[0],pWon.rgbColors[1],pWon.rgbColors[2],50);
             rect(275,150,tableWidth,tableHeight);
 
@@ -411,7 +432,7 @@ public class App extends PApplet {
             for(int i = 0;i<=index;i++) {
                 Player p = drawPlayers.get(i);
                 fill(p.rgbColors[0],p.rgbColors[1],p.rgbColors[2]);
-                text("Player " + p.playerName,drawStartX,drawStartY);
+                text("Player " + p.playerChar,drawStartX,drawStartY);
                 fill(0);
                 text(p.getScore(),drawStartX+235,drawStartY);
                 drawStartY +=20;
@@ -445,7 +466,7 @@ public class App extends PApplet {
                 text(p.getScore(),textX+100,textY);
                 text(p.getScore(),textX+100,textY);
                 fill(p.rgbColors[0],p.rgbColors[1],p.rgbColors[2]);
-                text("Player " + p.playerName,textX,textY);
+                text("Player " + p.playerChar,textX,textY);
                 textY +=20;
             }
 
@@ -468,11 +489,26 @@ public class App extends PApplet {
         }
 
         if(remainingTank==1 && currentLevel<2){
-            currentLevel +=1;
-            currentPlayingLevel = levels.get(currentLevel);
+            isLevelOver = true;
+            timer3+=1;
         } else if (remainingTank==1 && currentLevel==2){
+            isLevelOver = true;
             isGameOver = true;
         }
+
+
+        if(timer3>120){
+            currentLevel +=1;
+            currentPlayingLevel = levels.get(currentLevel);
+            newiterator = playerrrr.listIterator();
+            currentPlayer = newiterator.next();
+            timer=0;
+            timer2=0;
+            timer3=0;
+            isLevelOver = false;
+
+        }
+
 
     }
 

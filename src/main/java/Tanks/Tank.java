@@ -33,7 +33,7 @@ public class Tank extends LevelObject {
 
 
     public void useParachute(){
-        Player p = App.players.get(player.getPlayerName());
+        Player p = App.players.get(player.playerChar);
         p.setParachute(Math.max(p.getParachute() - 1, 0));
     }
 
@@ -128,7 +128,7 @@ public class Tank extends LevelObject {
 
     public void falling(){
         Integer [] height = level.getHeight();
-        Player p = App.players.get(player.getPlayerName());
+        Player p = App.players.get(player.playerChar);
         // set which projectile caused the fall
 
 
@@ -191,7 +191,7 @@ public class Tank extends LevelObject {
 
     @Override
     public void draw(App app){
-        Player p = App.players.get(player.getPlayerName());
+        Player p = App.players.get(player.playerChar);
 
         if(this.getPower()>this.getHealth()){
             this.setPower(this.getPower());
