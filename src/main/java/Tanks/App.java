@@ -21,7 +21,7 @@ public class App extends PApplet {
     public static final int BOARD_WIDTH = WIDTH/CELLSIZE;
     public static final int BOARD_HEIGHT = 20;
 
-    public static final int initialParachutes = 1;
+    public static final int INITIAL_PARACHUTES = 3;
 
     public static final int FPS = 60;
 

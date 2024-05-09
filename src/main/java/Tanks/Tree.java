@@ -26,7 +26,7 @@ public class Tree extends LevelObject{
      */
     public void draw(App app){
         app.image(level.getTreesSprite(),x-16,y-32);
-        Integer [] height = level.getHeight();
+        int [] height = level.getHeight();
         if(height[x]>y) {
             this.y = height[x];
         }

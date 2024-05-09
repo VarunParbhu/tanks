@@ -11,7 +11,7 @@ public class Player {
     public Player(Character playerChar) {
         this.playerChar = playerChar;
         rgbColors = App.setRBGValues(App.playerColoursConfig.getString(playerChar.toString()));
-        parachute = App.initialParachutes;
+        parachute = App.INITIAL_PARACHUTES;
         score = 0;
         bigProjectile = false;
     }
@@ -45,7 +45,7 @@ public class Player {
     }
 
     public void resetPlayer(){
-        parachute = App.initialParachutes;
+        parachute = App.INITIAL_PARACHUTES;
         score=0;
         bigProjectile = false;
     }

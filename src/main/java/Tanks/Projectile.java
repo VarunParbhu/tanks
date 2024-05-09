@@ -13,7 +13,7 @@ public class Projectile extends LevelObject{
     private float yPos;
     private float dx;
     private float dy;
-    private Integer [] height;
+    private int [] height;
     private Integer explodingRadius = 30;
     private Integer radius =0;
     private boolean active = true;
