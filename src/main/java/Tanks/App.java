@@ -21,13 +21,13 @@ public class App extends PApplet {
     public static final int BOARD_WIDTH = WIDTH/CELLSIZE;
     public static final int BOARD_HEIGHT = 20;
 
-    public static final int INITIAL_PARACHUTES = 3;
+    public static final int INITIAL_PARACHUTES = 0;
 
     public static final int FPS = 60;
 
     public String configPath;
 
-    public Integer currentLevel = 2;
+    public Integer currentLevel = 0;
     public Level currentPlayingLevel=null;
     public Iterator<Character> currentPlayerIterator = null;
     public Iterator<Character> drawPlayerIterator = null;
@@ -203,31 +203,31 @@ public class App extends PApplet {
 
         // Left
         if(this.keyCode==37){
-            currentTank.setX(currentTank.getX()-4);
+            currentTank.setX(currentTank.getX()- 4);
         }
         // Right
         if(this.keyCode==39){
-            currentTank.setX(currentTank.getX()+4);
+            currentTank.setX(currentTank.getX()+ 4);
         }
 
         // Up
         if(this.keyCode==38){
-            currentTank.setAngle(currentTank.getAngle() - 3.0/(App.FPS/4.0));
+            currentTank.setAngle(currentTank.getAngle() + 3.0/(15));
         }
 
         // Down
         if(this.keyCode==40){
-            currentTank.setAngle(currentTank.getAngle() + 3.0/(App.FPS/4.0));
+            currentTank.setAngle(currentTank.getAngle() - 3.0/(15));
         }
 
         // W
         if(this.keyCode==87){
-            currentTank.setPower(currentTank.getPower()+ 36.0/(App.FPS/2.0));
+            currentTank.setPower(currentTank.getPower()+ 36.0/(15));
         }
 
         // S
         if(this.keyCode==83){
-            currentTank.setPower(currentTank.getPower()- 36.0/(App.FPS/2.0));
+            currentTank.setPower(currentTank.getPower()- 36.0/(15));
         }
 
         // P
@@ -286,7 +286,6 @@ public class App extends PApplet {
 
     }
 
-
     /**
      * Receive key released signal from the keyboard.
      */
@@ -323,6 +322,8 @@ public class App extends PApplet {
         if(currentTank.player.isBigProjectile()){
             image(bigboiImg,200,15);
         }
+
+
 
         this.stroke(0,0,0);
         this.strokeWeight(2);
@@ -480,11 +481,33 @@ public class App extends PApplet {
 		//----------------------------------
         //----------------------------------
 
+
+
         //TODO: Check user action
         int remainingTank=0;
         for (Tank t : currentPlayingLevel.getPlayerTanks().values()){
             if(t.isActive()){
                 remainingTank++;
+            } else if (currentTank.equals(t)){
+                timer = 0;
+
+                boolean test = true;
+                while(test){
+
+                    if(!newiterator.hasNext()){
+                        newiterator = playerrrr.listIterator();
+                    }
+
+                    if(currentPlayingLevel.getPlayerTanks().get(newiterator.next()).isActive()){
+                        currentPlayer = newiterator.previous();
+                        test = false;
+                    }
+                }
+
+                currentPlayer = newiterator.next();
+
+                currentPlayingLevel.setWind(currentPlayingLevel.getWind());
+                currentTank = currentPlayingLevel.getPlayerTanks().get(currentPlayer);
             }
         }
 
@@ -497,7 +520,7 @@ public class App extends PApplet {
         }
 
 
-        if(timer3>120){
+        if(timer3>60){
             currentLevel +=1;
             currentPlayingLevel = levels.get(currentLevel);
             newiterator = playerrrr.listIterator();
@@ -506,7 +529,6 @@ public class App extends PApplet {
             timer2=0;
             timer3=0;
             isLevelOver = false;
-
         }
 
 

@@ -38,7 +38,7 @@ public class Level {
         this.wind = wind + RAND.nextInt(11) - 5;
     }
 
-    public Integer getWind(){ return wind;}
+    public int getWind(){ return wind;}
 
     public void setBackground(PImage background) {
         this.background = background;

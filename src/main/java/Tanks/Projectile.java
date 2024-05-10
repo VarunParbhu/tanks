@@ -4,58 +4,65 @@ import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
 public class Projectile extends LevelObject{
-    private Level level;
     public Tank tank;
+
+    private final Level level;
+    private final int wind;
+
     private boolean exploded = false;
     private boolean collided = false;
-    private final Integer wind;
+
     private float xPos;
     private float yPos;
     private float dx;
     private float dy;
     private int [] height;
-    private Integer explodingRadius = 30;
-    private Integer radius =0;
-    private boolean active = true;
-    private double distance;
-    private int damageCause;
+    private int explodingRadius = 30;
+    private int radius =0;
 
-    public Projectile(Level l,Tank t,Integer wind){
+    public Projectile(Level l,Tank t,int wind){
         super(l,t.getX(),t.getY()-6);
+        level = l;
+        tank = t;
 
         if(t.player.isBigProjectile()){
             this.explodingRadius *=2;
         }
 
-        this.level = l;
-        this.tank = t;
-        double power = 1 + (t.getPower() / 100.0) * 8;
+        double power = 1 + (t.getPower()/100.0) * 8;
         double angle = t.getAngle();
         this.wind = wind;
-        this.xPos = (float)t.getX() + (float)(10*sin(t.getAngle()));
-        this.yPos = (float)t.getY() + (float)(10*cos(t.getAngle())) - 6;
+        xPos = (float)t.getX() + (float)(10*sin(t.getAngle()));
+        yPos = (float)t.getY() + (float)(10*cos(t.getAngle())) - 6;
 
         dx = (float)((power *sin(angle)));
         dy = (float)((power *cos(angle)));
 
     }
 
+    public int getRadius(){
+        return radius;
+    }
 
-    public Integer getRadius(){return radius;}
-    public boolean getExploded(){return exploded;}
-    public boolean getCollided(){return collided;}
-    public boolean getActive(){return active;}
-    public void setInactive(){active = false;}
-    public Character getTankChar(){return tank.getPlayer().playerChar;}
+    public int getExplodingRadius(){
+        return explodingRadius;
+    }
+
+    public boolean getExploded(){
+        return exploded;
+    }
+
+    public boolean getCollided(){
+        return collided;
+    }
 
     public void move(){
         if(x<-5 || x>= App.WIDTH+5 || y>=App.HEIGHT+5){
-            this.setInactive();
+            setInActive();
         } else {
-
             if (!collided) {
-                this.xPos += dx;
-                this.yPos += dy;
+                xPos += dx;
+                yPos += dy;
                 dx += (float) (wind * 0.03) / App.FPS;
                 dy += (float) 3.6 / App.FPS;
                 x = (int) xPos;
@@ -63,8 +70,8 @@ public class Projectile extends LevelObject{
             }
             // check if collision happens
             height = level.getHeight();
-            if (((int) Math.floor(this.xPos)) >= 0 && ((int) Math.floor(this.xPos)) < App.WIDTH)
-                if (height[(int) Math.floor(this.xPos)] - this.yPos < 0) {
+            if (((int) Math.floor(xPos)) >= 0 && ((int) Math.floor(xPos)) < App.WIDTH)
+                if (height[(int) Math.floor(xPos)] - yPos < 0) {
                     collided = true;
                 }
         }
@@ -79,11 +86,14 @@ public class Projectile extends LevelObject{
         if (radius >explodingRadius){
 
             for (Tank t : level.getPlayerTanks().values()){
-                if(!t.equals(tank)) {
-                    distance = Math.sqrt(Math.pow(t.getX() - this.xPos, 2) + Math.pow(t.getY() - this.yPos, 2));
-                    if (distance <= explodingRadius) {
-                        damageCause = (int) (((explodingRadius - distance) / explodingRadius) * 60);
+                double distanceFromTank = Math.sqrt(Math.pow(t.getX() - xPos, 2) + Math.pow(t.getY() - yPos, 2));
+
+                if (distanceFromTank <= explodingRadius) {
+                    int damageCause = (int) (((explodingRadius - distanceFromTank) / explodingRadius) * 60);
+                    if(!t.equals(tank)) {
+                        t.setHealth(-1*damageCause);
                         tank.player.setScore(damageCause);
+                    } else {
                         t.setHealth(-1*damageCause);
                     }
                 }
@@ -95,11 +105,10 @@ public class Projectile extends LevelObject{
     //change height of level
 
     public void levelTerrain() {
-        height= level.getHeight();
-        int xcoordinate = (int)Math.floor(this.xPos);
-        int ycoordinate = (int)Math.floor(this.yPos);
+        height = level.getHeight();
+        int xcoordinate = (int)Math.floor(xPos);
+        int ycoordinate = (int)Math.floor(yPos);
 
-        int count = 0;
         for(int i=xcoordinate-explodingRadius;i<xcoordinate+explodingRadius;i++){
             if(i>0 && i<height.length){
                 double heightCircle = Math.sqrt(Math.pow(explodingRadius, 2.0) - Math.pow(xcoordinate - i, 2.0));
@@ -121,43 +130,42 @@ public class Projectile extends LevelObject{
     }
 
     public void draw(App app){
-//        Integer[] playerRGG = level.getRBGValues(App.playerColoursConfig.getString(tank.getPlayer().getPlayerName().toString()));
         int [] playerRGG = tank.player.rgbColors;
-        if(this.isActive()){
-            if(!this.getExploded()){
-                if(!this.getCollided()){
+        if(isActive()){
+            if(!getExploded()){
+                if(!getCollided()){
 
                     app.fill(playerRGG[0],playerRGG[1],playerRGG[2]);
                     app.stroke(playerRGG[0],playerRGG[1],playerRGG[2]);
-                    app.ellipse(this.getX(),this.getY(),5,5);
+                    app.ellipse(getX(),getY(),5,5);
 
                     app.fill(0,0,0);
                     app.stroke(0,0,0);
-                    app.ellipse(this.getX(),this.getY(),1,1);
+                    app.ellipse(getX(),getY(),1,1);
 
-                    this.move();
+                    move();
+
                 } else {
+
                     app.fill(255,0,0);
                     app.stroke(255,0,0);
-                    app.ellipse(this.getX(),this.getY(), Math.min(this.getRadius(),explodingRadius) ,Math.min(this.getRadius(),explodingRadius));
+                    app.ellipse(getX(),getY(), Math.min(getRadius(),explodingRadius) ,Math.min(getRadius(),explodingRadius));
 
                     app.fill(255,165,0);
                     app.stroke(255,165,0);
-                    app.ellipse(this.getX(),this.getY(), Math.min(this.getRadius(),explodingRadius*0.5F) ,Math.min(this.getRadius(),explodingRadius*0.5F));
+                    app.ellipse(getX(),getY(), Math.min(getRadius(),explodingRadius*0.5F) ,Math.min(getRadius(),explodingRadius*0.5F));
 
                     app.fill(255,255,0);
                     app.stroke(255,255,0);
-                    app.ellipse(this.getX(),this.getY(), Math.min(this.getRadius(),explodingRadius*0.2F) ,Math.min(this.getRadius(),explodingRadius*0.2F));
+                    app.ellipse(getX(),getY(), Math.min(getRadius(),explodingRadius*0.2F) ,Math.min(getRadius(),explodingRadius*0.2F));
 
-                    this.explode();
+                    explode();
                 }
             } else {
-                this.levelTerrain();
-                this.setInActive();
+                levelTerrain();
+                setInActive();
             }
         }
-
     }
-
 
 }

@@ -21,7 +21,7 @@ public class Tank extends LevelObject {
     public Tank (Level level, Integer x, Integer y,Player player){
         super(level,x,y);
         setPlayer(player);
-        health=50;
+        health=100;
         fuel=250;
         power = 50;
     }
@@ -82,16 +82,15 @@ public class Tank extends LevelObject {
                 ArrayList<Projectile> projectileList = level.getProjectiles();
                 int index = projectileList.size() - 1;
 
-
                 while ((this.opponentP==null) && (index > 0)) {
                     Projectile p = projectileList.get(index);
-
-                    if (Math.abs(p.getX() - getX()) <= p.tank.getExplodingRadius() && !p.isActive()) {
+                    if (Math.abs(p.getX() - getX()) <= p.getExplodingRadius() && !p.isActive()){
                         break;
                     }
                     index = index - 1;
                 }
                 opponentP =  projectileList.get(index);
+                System.out.println(opponentP.tank.player.playerChar);
             }
 
             falling();
@@ -99,7 +98,9 @@ public class Tank extends LevelObject {
             if(isFalling){
                 isFalling=false;
                 setHealth(-1*fallDamage);
-                opponentP.tank.player.setScore(fallDamage);
+                if (!opponentP.tank.equals(this)) {
+                    opponentP.tank.player.setScore(fallDamage);
+                }
                 opponentP=null;
                 fallDamage=0;
                 useParachute();
@@ -119,6 +120,7 @@ public class Tank extends LevelObject {
             } else if (fuel > 0) {
                 this.x = x;
                 useFuel();
+
             }
             y = level.getHeight()[this.x];
         }
@@ -184,7 +186,7 @@ public class Tank extends LevelObject {
             this.health +=health;
         }
 
-        if(health<50){
+        if(this.health<50 && power>50){
             setPower(this.health);
         }
     }
