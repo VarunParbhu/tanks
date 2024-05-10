@@ -3,7 +3,7 @@ package Tanks;
 /**
  * Represents an abstract LevelObject that is inherited by Tree, Tank and Projectile.
  */
-public abstract class LevelObject {
+public abstract class LevelObject{
     /**
      * The object's x-coordinate
      */

@@ -120,7 +120,7 @@ public class Level {
             }
         }
 
-        height = calculateMovingAverage(calculateMovingAverage(height,App.CELLAVG),App.CELLAVG);
+        height = calculateMovingAverage(calculateMovingAverage(height,App.SMOOTHING_AVG),App.SMOOTHING_AVG);
 
         for(int col=0; col<screenLayout[0].length; col++){
             for(int row=0; row<screenLayout.length; row++){

@@ -3,7 +3,7 @@ package Tanks;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
-public class Projectile extends LevelObject{
+public class Projectile extends LevelObject implements Explosion{
     public Tank tank;
 
     private final Level level;
@@ -146,20 +146,8 @@ public class Projectile extends LevelObject{
                     move();
 
                 } else {
+                    explodeLevelObject(app,this);
 
-                    app.fill(255,0,0);
-                    app.stroke(255,0,0);
-                    app.ellipse(getX(),getY(), Math.min(getRadius(),explodingRadius) ,Math.min(getRadius(),explodingRadius));
-
-                    app.fill(255,165,0);
-                    app.stroke(255,165,0);
-                    app.ellipse(getX(),getY(), Math.min(getRadius(),explodingRadius*0.5F) ,Math.min(getRadius(),explodingRadius*0.5F));
-
-                    app.fill(255,255,0);
-                    app.stroke(255,255,0);
-                    app.ellipse(getX(),getY(), Math.min(getRadius(),explodingRadius*0.2F) ,Math.min(getRadius(),explodingRadius*0.2F));
-
-                    explode();
                 }
             } else {
                 levelTerrain();

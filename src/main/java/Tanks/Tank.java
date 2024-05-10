@@ -1,18 +1,17 @@
 package Tanks;
 
 import java.util.ArrayList;
-
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
-public class Tank extends LevelObject {
+public class Tank extends LevelObject implements Explosion {
     public int health;
     public int fuel;
     private double power;
     private double angle = 3*Math.PI/4.0;
 
     private Projectile opponentP;
-    private int explosionRadius;
+    private int explosionRadius = 30;
     private int radius = 0;
     private boolean exploded = false;
     private boolean isFalling = false;
@@ -26,9 +25,13 @@ public class Tank extends LevelObject {
         power = 50;
     }
 
-
+    @Override
     public int getRadius(){return radius;}
+
+    @Override
     public int getExplodingRadius(){return explosionRadius;}
+
+
     public boolean getExploded(){return exploded;}
 
 
@@ -37,6 +40,7 @@ public class Tank extends LevelObject {
         p.setParachute(Math.max(p.getParachute() - 1, 0));
     }
 
+    @Override
     public void explode(){
         if(health<=0){
             explosionRadius=15;
@@ -225,19 +229,7 @@ public class Tank extends LevelObject {
             // Exploding the tank if below map or health zero
             if (getHealth() <= 0 || getY() >= App.HEIGHT) {
                 if (!getExploded()) {
-                    app.fill(255, 0, 0);
-                    app.stroke(255, 0, 0);
-                    app.ellipse(getX(), getY(), Math.min(getRadius(),getExplodingRadius()), Math.min(getRadius(),getExplodingRadius()));
-
-                    app.fill(255, 165, 0);
-                    app.stroke(255, 165, 0);
-                    app.ellipse(getX(), getY(), Math.min(getRadius(), 0.5F*getExplodingRadius()), 0.5F*getExplodingRadius());
-
-                    app.fill(255, 255, 0);
-                    app.stroke(255, 255, 0);
-                    app.ellipse(getX(), getY(), Math.min(getRadius(), 0.2F*getExplodingRadius()), 0.2F*getExplodingRadius());
-
-                    explode();
+                    explodeLevelObject(app,this);
                 }
             }
         }
