@@ -7,8 +7,8 @@ import java.io.FileNotFoundException;
 
 public class Level {
 
-    private static final Random RAND = new Random();
-    private Integer wind = RAND.nextInt(71)-35;
+    private final Random rand = new Random();
+    private Integer wind = rand.nextInt(71)-35;
     private PImage background;
     private PImage treesSprite;
     private String layoutInput;
@@ -35,7 +35,7 @@ public class Level {
     }
 
     public void setWind(Integer wind) {
-        this.wind = wind + RAND.nextInt(11) - 5;
+        this.wind = wind + rand.nextInt(11) - 5;
     }
 
     public int getWind(){ return wind;}
@@ -120,7 +120,7 @@ public class Level {
             }
         }
 
-        height = calculateMovingAverage(calculateMovingAverage(height,App.SMOOTHING_AVG),App.SMOOTHING_AVG);
+        height = calculateMovingAverage(calculateMovingAverage(height));
 
         for(int col=0; col<screenLayout[0].length; col++){
             for(int row=0; row<screenLayout.length; row++){
@@ -141,11 +141,11 @@ public class Level {
             for (int row = 0; row < layout.length; row++) {
                 if (Objects.equals(layout[row][col], 'T')) {
                     if (col == 0) {
-                        treeCol = RAND.nextInt(16);
+                        treeCol = rand.nextInt(16);
                     } else if (col == 27) {
-                        treeCol = 27 * 32 - RAND.nextInt(16);
+                        treeCol = 27 * 32 - rand.nextInt(16);
                     } else {
-                        treeCol = (col + 1) * 32 - 16 + RAND.nextInt(31) - 15;
+                        treeCol = (col + 1) * 32 - 16 + rand.nextInt(31) - 15;
                     }
 
                     treeRow = height[treeCol];
@@ -173,7 +173,7 @@ public class Level {
     }
 
     public void restartLevel(){
-        wind = RAND.nextInt(71)-35;
+        wind = rand.nextInt(71)-35;
         projectiles.clear();
         playerTanks.clear();
         trees.clear();
@@ -182,12 +182,12 @@ public class Level {
         createLevel();
     }
 
-    public static int[] calculateMovingAverage(int[] data, int windowSize) {
+    private static int[] calculateMovingAverage(int[] data) {
         int[] movingAverages = new int[data.length];
         for (int i = 0; i < data.length; i++) {
-            if (i < data.length - windowSize + 1) {
+            if (i < data.length - App.SMOOTHING_AVG + 1) {
                 int sum = 0;
-                for (int j = i; j < i + windowSize; j++) {
+                for (int j = i; j < i + App.SMOOTHING_AVG; j++) {
                     sum += data[j];
                 }
                 movingAverages[i] = sum/32;

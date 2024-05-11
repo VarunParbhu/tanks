@@ -17,15 +17,23 @@ public class App extends PApplet {
     public static final int INITIAL_PARACHUTES = 3;
     public static final int FPS = 60;
 
-    public String configPath;
+    public static String configPath;
     public static JSONObject playerColoursConfig;
     public static PImage fuelCanImg = null;
     public static PImage parachuteImg = null;
     public static PImage bigboiImg = null;
     public static PImage windRightImg = null;
     public static PImage windLeftImg = null;
+    public static Map<Character,Player> players = new HashMap<>();
+    public static int arrowTimer =0;
+    public static int finalScoreBoardDelayTimer =0;
+    public static int levelDelayTimer =0;
+    public static int playerIndex = 0;
+    public static boolean isGameOver = false;
+    public static boolean isLevelOver = false;
+    private static final Random rand = new Random();
 
-    public Integer currentLevel = 0;
+    public int currentLevel = 0;
     public Level currentPlayingLevel=null;
     public ArrayList<Level> levels = new ArrayList<>();
     public Iterator<Character> playerIterator = null;
@@ -34,24 +42,16 @@ public class App extends PApplet {
     public List<Character> playerList =new ArrayList<>();;
     public Character currentPlayer = null;
     public Tank currentTank = null;
-    public static Map<Character,Player> players = new HashMap<>();
 
-    public Integer arrowTimer =0;
-    public Integer finalScoreBoardDelayTimer =0;
-    public Integer levelDelayTimer =0;
-    public Integer playerIndex = 0;
 
-    public static boolean isGameOver = false;
-    public static boolean isLevelOver = false;
 
-    private static final Random rand = new Random();
 
     /**
      * Loads all the configuration required by the application
      * Constructor of the application, called only ONCE
      **/
     public App() {
-        this.configPath = "config.json";
+        configPath = "config.json";
     }
 
     /**
@@ -149,48 +149,58 @@ public class App extends PApplet {
             }
         }
 
-        // Left
-        if(this.keyCode==37){
-            currentTank.setX(currentTank.getX()- 4);
-        }
-        // Right
-        if(this.keyCode==39){
-            currentTank.setX(currentTank.getX()+ 4);
-        }
+        if(!isGameOver){
+              // Left
+              if (this.keyCode == 37) {
+                currentTank.setX(currentTank.getX() - 4);
+              }
+              // Right
+              if (this.keyCode == 39) {
+                currentTank.setX(currentTank.getX() + 4);
+              }
 
-        // Up
-        if(this.keyCode==38){
-            currentTank.setAngle(currentTank.getAngle() + 3.0/(15));
-        }
+              // Up
+              if (this.keyCode == 38) {
+                currentTank.setAngle(currentTank.getAngle() + 3.0 / (15));
+              }
 
-        // Down
-        if(this.keyCode==40){
-            currentTank.setAngle(currentTank.getAngle() - 3.0/(15));
-        }
+              // Down
+              if (this.keyCode == 40) {
+                currentTank.setAngle(currentTank.getAngle() - 3.0 / (15));
+              }
 
-        // W
-        if(this.keyCode==87){
-            currentTank.setPower(currentTank.getPower()+ 36.0/(15));
-        }
+              // W
+              if (this.keyCode == 87) {
+                currentTank.setPower(currentTank.getPower() + 36.0 / (15));
+              }
 
-        // S
-        if(this.keyCode==83){
-            currentTank.setPower(currentTank.getPower()- 36.0/(15));
-        }
+              // S
+              if (this.keyCode == 83) {
+                currentTank.setPower(currentTank.getPower() - 36.0 / (15));
+              }
 
-        // P
-        if(this.keyCode==80){
-            if(currentTank.player.getScore()>15){
-                currentTank.player.setScore(-15);
-                currentTank.player.setParachute(currentTank.player.getParachute()+1);
-            }
-        }
+              // P
+              if (this.keyCode == 80) {
+                if (currentTank.player.getScore() > 15) {
+                  currentTank.player.setScore(-15);
+                  currentTank.player.setParachute(currentTank.player.getParachute() + 1);
+                }
+              }
 
-        // X
-        if(this.keyCode==88){
-            if(currentTank.player.getScore()>20 && !currentTank.player.isBigProjectile()){
-                currentTank.player.setScore(-20);
-                currentTank.player.setBigProjectileActive();
+              // X
+              if (this.keyCode == 88) {
+                if (currentTank.player.getScore() > 20 && !currentTank.player.isBigProjectile()) {
+                  currentTank.player.setScore(-20);
+                  currentTank.player.setBigProjectileActive();
+                }
+              }
+
+            // F
+            if(this.keyCode==70){
+                if(currentTank.player.getScore()>10){
+                    currentTank.player.setScore(-10);
+                    currentTank.setFuel(200);
+                }
             }
         }
 
@@ -199,18 +209,10 @@ public class App extends PApplet {
             if(isGameOver){
                 restartGame();
             } else {
-                if(currentTank.player.getScore()>20 && currentTank.health!=100){
+                if(currentTank.player.getScore()>20 && currentTank.getHealth()!=100){
                     currentTank.player.setScore(-20);
                     currentTank.setHealth(20);
                 }
-            }
-        }
-
-        // F
-        if(this.keyCode==70){
-            if(currentTank.player.getScore()>10){
-                currentTank.player.setScore(-10);
-                currentTank.setFuel(200);
             }
         }
 
@@ -237,15 +239,15 @@ public class App extends PApplet {
         for (Tank t : currentPlayingLevel.getPlayerTanks().values()){
             if(t.isActive()){
                 remainingTank++;
-            } else if (currentTank.equals(t)){
+            } else if (currentTank.equals(t) && remainingTank>0){
                 changePlayerTurn();
             }
         }
 
-        if(remainingTank==1 && currentLevel<levels.size()-1){
+        if(remainingTank<=1 && currentLevel<levels.size()-1){
             isLevelOver = true;
             levelDelayTimer +=1;
-        } else if (remainingTank==1 && currentLevel==levels.size()-1){
+        } else if (remainingTank<=1 && currentLevel==levels.size()-1){
             isLevelOver = true;
             isGameOver = true;
         }
@@ -269,7 +271,7 @@ public class App extends PApplet {
         textSize(15);
 
         text("Player " + currentPlayer + "'s turn", 15, 32);
-        text(currentTank.fuel,150,32);
+        text(currentTank.getFuel(),150,32);
         text(players.get(currentPlayer).getParachute(),150,57);
         text("Health:",352,32);
         text(currentTank.getHealth(),565,32);
@@ -316,7 +318,7 @@ public class App extends PApplet {
     public void playerArrow(){
         stroke(0,0,0);
         strokeWeight(2);
-        if(arrowTimer <FPS*2){
+        if(arrowTimer <FPS*2 && !isLevelOver && !isGameOver){
             line(currentTank.getX(),currentTank.getY()-50,currentTank.getX(),currentTank.getY()-100);
             line(currentTank.getX(),currentTank.getY()-50, (int)((currentTank.getX())-20*sin((float) Math.PI/6)),(int)((currentTank.getY()-50)-20*cos((float) Math.PI/6)));
             line(currentTank.getX(),currentTank.getY()-50, (int)((currentTank.getX())+20*sin((float) Math.PI/6)),(int)((currentTank.getY()-50)-20*cos((float) Math.PI/6)));
@@ -353,7 +355,7 @@ public class App extends PApplet {
 
     }
 
-    private void finalScoreboard() {
+    public void finalScoreboard() {
         List<Map.Entry<Character, Player>> list = new ArrayList<>(players.entrySet());
         Comparator<Map.Entry<Character, Player>> comparator = (entry1,entry2) -> entry2.getValue().getScore() - entry1.getValue().getScore();
 
@@ -411,10 +413,11 @@ public class App extends PApplet {
 
     }
 
-    private void changePlayerTurn() {
+    public void changePlayerTurn() {
         arrowTimer = 0;
-
+        int index = 0;
         while(true){
+
             if(!playerListiterator.hasNext()){
                 playerListiterator = playerList.listIterator();
             }
@@ -423,15 +426,21 @@ public class App extends PApplet {
                 currentPlayer = playerListiterator.previous();
                 break;
             }
+
+            if(index ++> players.size()*3){
+                break;
+            }
         }
 
-        currentPlayer = playerListiterator.next();
-        currentPlayingLevel.setWind(currentPlayingLevel.getWind());
-        currentTank = currentPlayingLevel.getPlayerTanks().get(currentPlayer);
+        if(playerListiterator.hasNext()){
+            currentPlayer = playerListiterator.next();
+            currentPlayingLevel.setWind(currentPlayingLevel.getWind());
+            currentTank = currentPlayingLevel.getPlayerTanks().get(currentPlayer);
+        }
 
     }
 
-    private void changeLevel() {
+    public void changeLevel() {
         currentLevel +=1;
         currentPlayingLevel = levels.get(currentLevel);
         playerListiterator = playerList.listIterator();

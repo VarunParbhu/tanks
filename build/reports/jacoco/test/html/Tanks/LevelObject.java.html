@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LevelObject.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tanks_scaffold</a> &gt; <a href="index.source.html" class="el_package">Tanks</a> &gt; <span class="el_source">LevelObject.java</span></div><h1>LevelObject.java</h1><pre class="source lang-java linenums">package Tanks;
+
+/**
+ * Represents an abstract LevelObject that is inherited by Tree, Tank and Projectile.
+ */
+public abstract class LevelObject{
+    /**
+     * The object's x-coordinate
+     */
+    protected int x;
+
+    /**
+     * The object's y-coordinate
+     */
+    protected int y;
+
+    /**
+     * The object's is active (alive).
+     */
+<span class="fc" id="L20">    protected boolean active = true;</span>
+
+    /**
+     * The object's Level it belongs to.
+     */
+    protected Level level;
+
+    /**
+     * The object's owner: the player.
+     * It can be null and have no owner as well.
+     */
+    protected Player player;
+
+
+    /**
+     * Creates a new level object with no sprite.
+     *
+     * @param level The level
+     * @param x The x-coordinate.
+     * @param y The y-coordinate.
+     */
+<span class="fc" id="L41">    public LevelObject(Level level,int x, int y) {</span>
+<span class="fc" id="L42">        this.level = level;</span>
+<span class="fc" id="L43">        this.x = x;</span>
+<span class="fc" id="L44">        this.y = y;</span>
+<span class="fc" id="L45">    }</span>
+
+    /**
+     * Gets the x-coordinate.
+     * @return The x-coordinate.
+     */
+    public int getX() {
+<span class="fc" id="L52">        return this.x;</span>
+    }
+
+    /**
+     * Returns the y-coordinate.
+     * @return The y-coordinate.
+     */
+    public int getY() {
+<span class="fc" id="L60">        return this.y;</span>
+    }
+
+    /**
+     * Returns the activity.
+     * @return active.
+     */
+    public boolean isActive() {
+<span class="fc" id="L68">        return active;</span>
+    }
+
+    /**
+     * Changes the active to true.
+     */
+    public void setActive() {
+<span class="nc" id="L75">        active = true;</span>
+<span class="nc" id="L76">    }</span>
+
+    /**
+     * Changes the active to true.
+     */
+    public void setInActive() {
+<span class="nc" id="L82">        active = false;</span>
+<span class="nc" id="L83">    }</span>
+
+    /**
+     * Set the object's owner.
+     */
+    public void setPlayer(Player player) {
+<span class="fc" id="L89">        this.player = player;</span>
+<span class="fc" id="L90">    }</span>
+
+    /**
+     * Set the object's owner.
+     */
+    public Player getPlayer() {
+<span class="nc" id="L96">        return player;</span>
+    }
+
+    /**
+     * Draws the level object on the screen.
+     *
+     * @param app The window to draw onto
+     */
+    public abstract void draw(App app);
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

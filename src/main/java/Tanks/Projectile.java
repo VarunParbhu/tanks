@@ -4,14 +4,12 @@ import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
 public class Projectile extends LevelObject implements Explosion{
-    public Tank tank;
 
+    public Tank tank;
     private final Level level;
     private final int wind;
-
     private boolean exploded = false;
     private boolean collided = false;
-
     private float xPos;
     private float yPos;
     private float dx;
@@ -40,10 +38,12 @@ public class Projectile extends LevelObject implements Explosion{
 
     }
 
+    @Override
     public int getRadius(){
         return radius;
     }
 
+    @Override
     public int getExplodingRadius(){
         return explodingRadius;
     }
@@ -78,7 +78,7 @@ public class Projectile extends LevelObject implements Explosion{
     }
 
     //get height of level and set level here
-
+    @Override
     public void explode(){
         if (!exploded) {
             radius += 5 *(explodingRadius/30);
@@ -124,11 +124,11 @@ public class Projectile extends LevelObject implements Explosion{
                 }
             }
         }
-
         level.setHeight(height);
 
     }
 
+    @Override
     public void draw(App app){
         int [] playerRGG = tank.player.rgbColors;
         if(isActive()){

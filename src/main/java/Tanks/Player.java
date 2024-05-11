@@ -3,7 +3,6 @@ package Tanks;
 public class Player {
     public final Character playerChar;
     public int [] rgbColors;
-
     private int parachute;
     private int score;
     private boolean bigProjectile;

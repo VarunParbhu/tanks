@@ -5,17 +5,17 @@ import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
 public class Tank extends LevelObject implements Explosion {
-    public int health;
-    public int fuel;
+    private int health;
+    private int fuel;
     private double power;
     private double angle = 3*Math.PI/4.0;
-
-    private Projectile opponentP;
     private int explosionRadius = 30;
     private int radius = 0;
     private boolean exploded = false;
     private boolean isFalling = false;
-    public int fallDamage = 0;
+    private int fallDamage = 0;
+    private Projectile opponentP;
+
 
     public Tank (Level level, Integer x, Integer y,Player player){
         super(level,x,y);
@@ -78,6 +78,25 @@ public class Tank extends LevelObject implements Explosion {
 
     public boolean isFalling(){return isFalling;}
 
+    public void falling(){
+        int [] height = level.getHeight();
+        // Player p = App.players.get(player.playerChar);
+        // set which projectile caused the fall
+        if(y<0){
+            y=0;
+        } else if (y>=App.HEIGHT){
+            y=App.HEIGHT;
+        } else if (height[x]>y && player.getParachute()>0){
+            y += 60/App.FPS;
+        } else if (height[x]>y && player.getParachute()<=0){
+            y += 120/App.FPS;
+            fallDamage += 120/App.FPS;
+        } else if (height[x]<y){
+            y = height[x];
+            explosionRadius = 30;
+        }
+    }
+
     public void fall(){
         if(y < level.getHeight()[x]){
             isFalling=true;
@@ -94,9 +113,7 @@ public class Tank extends LevelObject implements Explosion {
                     index = index - 1;
                 }
                 opponentP =  projectileList.get(index);
-                System.out.println(opponentP.tank.player.playerChar);
             }
-
             falling();
         } else {
             if(isFalling){
@@ -127,25 +144,6 @@ public class Tank extends LevelObject implements Explosion {
 
             }
             y = level.getHeight()[this.x];
-        }
-    }
-
-    public void falling(){
-        int [] height = level.getHeight();
-        // Player p = App.players.get(player.playerChar);
-        // set which projectile caused the fall
-        if(y<0){
-            y=0;
-        } else if (y>=App.HEIGHT){
-            y=App.HEIGHT;
-        } else if (height[x]>y && player.getParachute()>0){
-            y += 60/App.FPS;
-        } else if (height[x]>y && player.getParachute()<=0){
-            y += 120/App.FPS;
-            fallDamage += 120/App.FPS;
-        } else if (height[x]<y){
-            y = height[x];
-            explosionRadius = 30;
         }
     }
 

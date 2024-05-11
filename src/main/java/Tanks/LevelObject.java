@@ -49,7 +49,7 @@ public abstract class LevelObject{
      * @return The x-coordinate.
      */
     public int getX() {
-        return this.x;
+        return x;
     }
 
     /**
@@ -57,7 +57,7 @@ public abstract class LevelObject{
      * @return The y-coordinate.
      */
     public int getY() {
-        return this.y;
+        return y;
     }
 
     /**

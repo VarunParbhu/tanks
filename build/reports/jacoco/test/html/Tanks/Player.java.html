@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Player.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tanks_scaffold</a> &gt; <a href="index.source.html" class="el_package">Tanks</a> &gt; <span class="el_source">Player.java</span></div><h1>Player.java</h1><pre class="source lang-java linenums">package Tanks;
+
+public class Player {
+    public final Character playerChar;
+    public int [] rgbColors;
+
+    private int parachute;
+    private int score;
+    private boolean bigProjectile;
+
+<span class="fc" id="L11">    public Player(Character playerChar) {</span>
+<span class="fc" id="L12">        this.playerChar = playerChar;</span>
+<span class="fc" id="L13">        rgbColors = App.setRBGValues(App.playerColoursConfig.getString(playerChar.toString()));</span>
+<span class="fc" id="L14">        parachute = App.INITIAL_PARACHUTES;</span>
+<span class="fc" id="L15">        score = 0;</span>
+<span class="fc" id="L16">        bigProjectile = false;</span>
+<span class="fc" id="L17">    }</span>
+
+    public int getParachute() {
+<span class="fc" id="L20">        return parachute;</span>
+    }
+
+    public void setParachute(int parachute) {
+<span class="nc" id="L24">        this.parachute = parachute;</span>
+<span class="nc" id="L25">    }</span>
+
+    public int getScore() {
+<span class="fc" id="L28">        return score;</span>
+    }
+
+    public void setScore(int score) {
+<span class="nc" id="L32">        this.score += score;</span>
+<span class="nc" id="L33">    }</span>
+
+    public void setBigProjectileActive() {
+<span class="nc" id="L36">        this.bigProjectile = true;</span>
+<span class="nc" id="L37">    }</span>
+
+    public void setBigProjectileInactive() {
+<span class="nc" id="L40">        this.bigProjectile = false;</span>
+<span class="nc" id="L41">    }</span>
+
+    public boolean isBigProjectile() {
+<span class="fc" id="L44">        return bigProjectile;</span>
+    }
+
+    public void resetPlayer(){
+<span class="nc" id="L48">        parachute = App.INITIAL_PARACHUTES;</span>
+<span class="nc" id="L49">        score=0;</span>
+<span class="nc" id="L50">        bigProjectile = false;</span>
+<span class="nc" id="L51">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

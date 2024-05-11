@@ -1,0 +1,498 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>App.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tanks_scaffold</a> &gt; <a href="index.source.html" class="el_package">Tanks</a> &gt; <span class="el_source">App.java</span></div><h1>App.java</h1><pre class="source lang-java linenums">package Tanks;
+
+import processing.core.PApplet;
+import processing.core.PImage;
+import processing.data.JSONArray;
+import processing.data.JSONObject;
+import processing.event.KeyEvent;
+
+import java.util.*;
+
+public class App extends PApplet {
+
+<span class="fc" id="L13">    public static int WIDTH = 864;</span>
+<span class="fc" id="L14">    public static int HEIGHT = 640;</span>
+
+    public static final int SMOOTHING_AVG = 32;
+    public static final int INITIAL_PARACHUTES = 3;
+    public static final int FPS = 60;
+
+    public String configPath;
+    public static JSONObject playerColoursConfig;
+<span class="fc" id="L22">    public static PImage fuelCanImg = null;</span>
+<span class="fc" id="L23">    public static PImage parachuteImg = null;</span>
+<span class="fc" id="L24">    public static PImage bigboiImg = null;</span>
+<span class="fc" id="L25">    public static PImage windRightImg = null;</span>
+<span class="fc" id="L26">    public static PImage windLeftImg = null;</span>
+
+<span class="fc" id="L28">    public Integer currentLevel = 0;</span>
+<span class="fc" id="L29">    public Level currentPlayingLevel=null;</span>
+<span class="fc" id="L30">    public ArrayList&lt;Level&gt; levels = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L31">    public Iterator&lt;Character&gt; playerIterator = null;</span>
+<span class="fc" id="L32">    public Iterator&lt;Character&gt; drawPlayerIterator = null;</span>
+<span class="fc" id="L33">    public ListIterator&lt;Character&gt; playerListiterator = null;</span>
+<span class="fc" id="L34">    public List&lt;Character&gt; playerList =new ArrayList&lt;&gt;();;</span>
+<span class="fc" id="L35">    public Character currentPlayer = null;</span>
+<span class="fc" id="L36">    public Tank currentTank = null;</span>
+<span class="fc" id="L37">    public static Map&lt;Character,Player&gt; players = new HashMap&lt;&gt;();</span>
+
+<span class="fc" id="L39">    public Integer arrowTimer =0;</span>
+<span class="fc" id="L40">    public Integer finalScoreBoardDelayTimer =0;</span>
+<span class="fc" id="L41">    public Integer levelDelayTimer =0;</span>
+<span class="fc" id="L42">    public Integer playerIndex = 0;</span>
+
+<span class="fc" id="L44">    public static boolean isGameOver = false;</span>
+<span class="fc" id="L45">    public static boolean isLevelOver = false;</span>
+
+<span class="fc" id="L47">    private static final Random rand = new Random();</span>
+
+    /**
+     * Loads all the configuration required by the application
+     * Constructor of the application, called only ONCE
+     **/
+<span class="fc" id="L53">    public App() {</span>
+<span class="fc" id="L54">        this.configPath = &quot;config.json&quot;;</span>
+<span class="fc" id="L55">    }</span>
+
+    /**
+     * Initialise the setting of the window size.
+     * size method defines the dimension of the display window in units of pixels.
+     */
+	@Override
+    public void settings() {
+<span class="fc" id="L63">        size(WIDTH, HEIGHT);</span>
+<span class="fc" id="L64">    }</span>
+
+    /**
+     * Load all resources such as images. Initialise the elements such as the player and map elements.
+     * Called only ONCE when the program starts; hence need to load all the resources here, then access them
+     */
+	@Override
+    public void setup() {
+<span class="fc" id="L72">        frameRate(FPS);</span>
+<span class="fc" id="L73">        JSONArray levelsConfig = loadJSONObject(configPath).getJSONArray(&quot;levels&quot;);</span>
+<span class="fc" id="L74">        playerColoursConfig = loadJSONObject(configPath).getJSONObject(&quot;player_colours&quot;);</span>
+
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        for (int i = 0; i &lt; levelsConfig.size(); i++){</span>
+<span class="fc" id="L77">            JSONObject level = levelsConfig.getJSONObject(i);</span>
+<span class="fc" id="L78">            Level l = new Level();</span>
+
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">            if(level.hasKey(&quot;layout&quot;)){l.setLayout(level.getString(&quot;layout&quot;));}</span>
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">            if(level.hasKey(&quot;foreground-colour&quot;)){l.setForegroundColour(level.getString(&quot;foreground-colour&quot;));}</span>
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">            if(level.hasKey(&quot;background&quot;)){</span>
+<span class="fc" id="L83">                PImage backgroundIMG = loadImage(Objects.requireNonNull(getClass().getResource(level.getString(&quot;background&quot;))).getPath().toLowerCase(Locale.ROOT).replace(&quot;%20&quot;, &quot; &quot;));</span>
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">                if (backgroundIMG != null){l.setBackground(backgroundIMG);}</span>
+            }
+<span class="fc bfc" id="L86" title="All 2 branches covered.">            if (level.hasKey(&quot;trees&quot;)){</span>
+<span class="fc" id="L87">                PImage treeIMG = loadImage(Objects.requireNonNull(getClass().getResource(level.getString(&quot;trees&quot;))).getPath().toLowerCase(Locale.ROOT).replace(&quot;%20&quot;, &quot; &quot;));</span>
+<span class="fc" id="L88">                treeIMG.resize(32,32);</span>
+<span class="fc" id="L89">                l.setTreeSprite(treeIMG);</span>
+<span class="fc" id="L90">            } else {</span>
+                // Setting default tree to be tree1.png if not provided in the config JSON for the level
+<span class="fc" id="L92">                PImage treeIMG = loadImage(Objects.requireNonNull(getClass().getResource(&quot;tree1.png&quot;)).getPath().toLowerCase(Locale.ROOT).replace(&quot;%20&quot;, &quot; &quot;));</span>
+<span class="fc" id="L93">                treeIMG.resize(32,32);</span>
+<span class="fc" id="L94">                l.setTreeSprite(treeIMG);</span>
+            }
+
+<span class="fc" id="L97">            PImage parachuteIMG = loadImage(Objects.requireNonNull(getClass().getResource(&quot;parachute.png&quot;)).getPath().toLowerCase(Locale.ROOT).replace(&quot;%20&quot;, &quot; &quot;));</span>
+<span class="fc" id="L98">            parachuteIMG.resize(20,20);</span>
+<span class="fc" id="L99">            levels.add(l);</span>
+        }
+
+<span class="fc" id="L102">        fuelCanImg = loadImage(Objects.requireNonNull(getClass().getResource(&quot;fuel.png&quot;)).getPath().toLowerCase(Locale.ROOT).replace(&quot;%20&quot;, &quot; &quot;));</span>
+<span class="fc" id="L103">        parachuteImg = loadImage(Objects.requireNonNull(getClass().getResource(&quot;parachute.png&quot;)).getPath().toLowerCase(Locale.ROOT).replace(&quot;%20&quot;, &quot; &quot;));</span>
+<span class="fc" id="L104">        bigboiImg = loadImage(Objects.requireNonNull(getClass().getResource(&quot;bigboi.png&quot;)).getPath().toLowerCase(Locale.ROOT).replace(&quot;%20&quot;, &quot; &quot;));</span>
+<span class="fc" id="L105">        windRightImg = loadImage(Objects.requireNonNull(getClass().getResource(&quot;wind.png&quot;)).getPath().toLowerCase(Locale.ROOT).replace(&quot;%20&quot;, &quot; &quot;));</span>
+<span class="fc" id="L106">        windLeftImg = loadImage(Objects.requireNonNull(getClass().getResource(&quot;wind-1.png&quot;)).getPath().toLowerCase(Locale.ROOT).replace(&quot;%20&quot;, &quot; &quot;));</span>
+
+<span class="fc" id="L108">        fuelCanImg.resize(20,20);</span>
+<span class="fc" id="L109">        parachuteImg.resize(20,20);</span>
+<span class="fc" id="L110">        bigboiImg.resize(20,20);</span>
+
+<span class="fc" id="L112">        currentPlayingLevel = levels.get(0);</span>
+<span class="fc" id="L113">        playerIterator = currentPlayingLevel.getPlayerTurn().iterator();</span>
+
+<span class="fc bfc" id="L115" title="All 2 branches covered.">        while(playerIterator.hasNext()){</span>
+<span class="fc" id="L116">            playerList.add(playerIterator.next());</span>
+        }
+
+<span class="fc" id="L119">        playerListiterator = playerList.listIterator();</span>
+<span class="fc" id="L120">        currentPlayer = playerListiterator.next();</span>
+<span class="fc" id="L121">    }</span>
+
+    /**
+     * Receive key pressed signal from the keyboard.
+     */
+	@Override
+    public void keyPressed(KeyEvent event){
+        // Spacebar: 32
+        // Left: 37
+        // Up: 38
+        // Right: 39
+        // Down: 40
+        // W: 87
+        // S: 83
+        // P: 80
+        // X: 88
+        // R: 82
+        // F: 70
+
+        //Spacebar
+<span class="nc bnc" id="L141" title="All 2 branches missed.">        if (this.keyCode==32){</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">            if (currentTank.isActive()){</span>
+<span class="nc" id="L143">                currentPlayingLevel.setProjectiles(new Projectile(currentPlayingLevel,currentTank,currentPlayingLevel.getWind()));</span>
+<span class="nc" id="L144">                currentTank.player.setBigProjectileInactive();</span>
+            }
+<span class="nc" id="L146">            changePlayerTurn();</span>
+<span class="nc bnc" id="L147" title="All 4 branches missed.">            if(isLevelOver &amp;&amp; currentLevel&lt;2){</span>
+<span class="nc" id="L148">                changeLevel();</span>
+            }
+        }
+
+<span class="nc bnc" id="L152" title="All 2 branches missed.">        if(!isGameOver){</span>
+              // Left
+<span class="nc bnc" id="L154" title="All 2 branches missed.">              if (this.keyCode == 37) {</span>
+<span class="nc" id="L155">                currentTank.setX(currentTank.getX() - 4);</span>
+              }
+              // Right
+<span class="nc bnc" id="L158" title="All 2 branches missed.">              if (this.keyCode == 39) {</span>
+<span class="nc" id="L159">                currentTank.setX(currentTank.getX() + 4);</span>
+              }
+
+              // Up
+<span class="nc bnc" id="L163" title="All 2 branches missed.">              if (this.keyCode == 38) {</span>
+<span class="nc" id="L164">                currentTank.setAngle(currentTank.getAngle() + 3.0 / (15));</span>
+              }
+
+              // Down
+<span class="nc bnc" id="L168" title="All 2 branches missed.">              if (this.keyCode == 40) {</span>
+<span class="nc" id="L169">                currentTank.setAngle(currentTank.getAngle() - 3.0 / (15));</span>
+              }
+
+              // W
+<span class="nc bnc" id="L173" title="All 2 branches missed.">              if (this.keyCode == 87) {</span>
+<span class="nc" id="L174">                currentTank.setPower(currentTank.getPower() + 36.0 / (15));</span>
+              }
+
+              // S
+<span class="nc bnc" id="L178" title="All 2 branches missed.">              if (this.keyCode == 83) {</span>
+<span class="nc" id="L179">                currentTank.setPower(currentTank.getPower() - 36.0 / (15));</span>
+              }
+
+              // P
+<span class="nc bnc" id="L183" title="All 2 branches missed.">              if (this.keyCode == 80) {</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">                if (currentTank.player.getScore() &gt; 15) {</span>
+<span class="nc" id="L185">                  currentTank.player.setScore(-15);</span>
+<span class="nc" id="L186">                  currentTank.player.setParachute(currentTank.player.getParachute() + 1);</span>
+                }
+              }
+
+              // X
+<span class="nc bnc" id="L191" title="All 2 branches missed.">              if (this.keyCode == 88) {</span>
+<span class="nc bnc" id="L192" title="All 4 branches missed.">                if (currentTank.player.getScore() &gt; 20 &amp;&amp; !currentTank.player.isBigProjectile()) {</span>
+<span class="nc" id="L193">                  currentTank.player.setScore(-20);</span>
+<span class="nc" id="L194">                  currentTank.player.setBigProjectileActive();</span>
+                }
+              }
+
+            // F
+<span class="nc bnc" id="L199" title="All 2 branches missed.">            if(this.keyCode==70){</span>
+<span class="nc bnc" id="L200" title="All 2 branches missed.">                if(currentTank.player.getScore()&gt;10){</span>
+<span class="nc" id="L201">                    currentTank.player.setScore(-10);</span>
+<span class="nc" id="L202">                    currentTank.setFuel(200);</span>
+                }
+            }
+        }
+
+        // R
+<span class="nc bnc" id="L208" title="All 2 branches missed.">        if(this.keyCode==82){</span>
+<span class="nc bnc" id="L209" title="All 2 branches missed.">            if(isGameOver){</span>
+<span class="nc" id="L210">                restartGame();</span>
+            } else {
+<span class="nc bnc" id="L212" title="All 4 branches missed.">                if(currentTank.player.getScore()&gt;20 &amp;&amp; currentTank.health!=100){</span>
+<span class="nc" id="L213">                    currentTank.player.setScore(-20);</span>
+<span class="nc" id="L214">                    currentTank.setHealth(20);</span>
+                }
+            }
+        }
+
+<span class="nc" id="L219">    }</span>
+
+    /**
+     * Draw all elements in the game by current frame.
+     */
+	@Override
+    public void draw() {
+<span class="fc" id="L226">        currentPlayingLevel.draw(this);</span>
+<span class="fc" id="L227">        componentGUI();</span>
+<span class="fc" id="L228">        healthBarGUI();</span>
+<span class="fc" id="L229">        windGUI();</span>
+<span class="fc" id="L230">        playerArrow();</span>
+
+<span class="pc bpc" id="L232" title="1 of 2 branches missed.">        if(isGameOver){</span>
+<span class="nc" id="L233">            finalScoreboard();</span>
+        } else {
+<span class="fc" id="L235">            inGameScoreboard();</span>
+        }
+
+<span class="fc" id="L238">        int remainingTank=0;</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">        for (Tank t : currentPlayingLevel.getPlayerTanks().values()){</span>
+<span class="pc bpc" id="L240" title="1 of 2 branches missed.">            if(t.isActive()){</span>
+<span class="fc" id="L241">                remainingTank++;</span>
+<span class="nc bnc" id="L242" title="All 4 branches missed.">            } else if (currentTank.equals(t) &amp;&amp; remainingTank&gt;0){</span>
+<span class="nc" id="L243">                changePlayerTurn();</span>
+            }
+<span class="fc" id="L245">        }</span>
+
+<span class="pc bpc" id="L247" title="3 of 4 branches missed.">        if(remainingTank&lt;=1 &amp;&amp; currentLevel&lt;levels.size()-1){</span>
+<span class="nc" id="L248">            isLevelOver = true;</span>
+<span class="nc" id="L249">            levelDelayTimer +=1;</span>
+<span class="pc bpc" id="L250" title="3 of 4 branches missed.">        } else if (remainingTank&lt;=1 &amp;&amp; currentLevel==levels.size()-1){</span>
+<span class="nc" id="L251">            isLevelOver = true;</span>
+<span class="nc" id="L252">            isGameOver = true;</span>
+        }
+
+<span class="pc bpc" id="L255" title="1 of 2 branches missed.">        if(levelDelayTimer &gt;60){</span>
+<span class="nc" id="L256">            changeLevel();</span>
+        }
+
+<span class="fc" id="L259">    }</span>
+
+    private void componentGUI () {
+<span class="fc" id="L262">        image(fuelCanImg,130,15);</span>
+<span class="fc" id="L263">        image(parachuteImg,130,40);</span>
+
+<span class="fc" id="L265">        currentTank = currentPlayingLevel.getPlayerTanks().get(currentPlayer);</span>
+<span class="pc bpc" id="L266" title="1 of 2 branches missed.">        if(currentTank.player.isBigProjectile()){</span>
+<span class="nc" id="L267">            image(bigboiImg,200,15);</span>
+        }
+
+<span class="fc" id="L270">        fill(0);</span>
+<span class="fc" id="L271">        textSize(15);</span>
+
+<span class="fc" id="L273">        text(&quot;Player &quot; + currentPlayer + &quot;'s turn&quot;, 15, 32);</span>
+<span class="fc" id="L274">        text(currentTank.fuel,150,32);</span>
+<span class="fc" id="L275">        text(players.get(currentPlayer).getParachute(),150,57);</span>
+<span class="fc" id="L276">        text(&quot;Health:&quot;,352,32);</span>
+<span class="fc" id="L277">        text(currentTank.getHealth(),565,32);</span>
+<span class="fc" id="L278">        text(&quot;Power:&quot;,352,55);</span>
+<span class="fc" id="L279">        text((int)currentTank.getPower(),408,55);</span>
+
+<span class="fc" id="L281">    }</span>
+
+    private void windGUI(){
+<span class="fc" id="L284">        fill(0);</span>
+<span class="pc bpc" id="L285" title="1 of 2 branches missed.">        if(currentPlayingLevel.getWind()&lt;=0){</span>
+<span class="fc" id="L286">            image(windLeftImg,WIDTH-120,0);</span>
+        } else {
+<span class="nc" id="L288">            image(windRightImg,WIDTH-120,0);</span>
+        }
+<span class="fc" id="L290">        text(Math.abs(currentPlayingLevel.getWind()),WIDTH-50,36);</span>
+
+<span class="fc" id="L292">    }</span>
+
+    private void healthBarGUI(){
+<span class="fc" id="L295">        stroke(0,0,0);</span>
+<span class="fc" id="L296">        strokeWeight(4);</span>
+<span class="fc" id="L297">        fill(256,256,256);</span>
+<span class="fc" id="L298">        rect(410,16,150,20);</span>
+
+<span class="fc" id="L300">        int [] playerRGG = currentTank.player.rgbColors;</span>
+<span class="fc" id="L301">        stroke(0,0,0);</span>
+<span class="fc" id="L302">        strokeWeight(0);</span>
+<span class="fc" id="L303">        fill(playerRGG[0], playerRGG[1], playerRGG[2]);</span>
+<span class="fc" id="L304">        float healthDisplay =  (float) (currentTank.getHealth()/100.0 * 150);</span>
+<span class="fc" id="L305">        rect(410,16,healthDisplay,20);</span>
+
+<span class="fc" id="L307">        stroke(128,128,128);</span>
+<span class="fc" id="L308">        strokeWeight(4);</span>
+<span class="fc" id="L309">        float powerDisplay =  (float) (currentTank.getPower()/100.0 * 150);</span>
+<span class="fc" id="L310">        rect(410,16,powerDisplay,20);</span>
+
+<span class="fc" id="L312">        stroke(255,0,0);</span>
+<span class="fc" id="L313">        strokeWeight(1);</span>
+<span class="fc" id="L314">        line(410+powerDisplay,10,410+powerDisplay,42);</span>
+
+<span class="fc" id="L316">    }</span>
+
+    public void playerArrow(){
+<span class="fc" id="L319">        stroke(0,0,0);</span>
+<span class="fc" id="L320">        strokeWeight(2);</span>
+<span class="pc bpc" id="L321" title="3 of 6 branches missed.">        if(arrowTimer &lt;FPS*2 &amp;&amp; !isLevelOver &amp;&amp; !isGameOver){</span>
+<span class="fc" id="L322">            line(currentTank.getX(),currentTank.getY()-50,currentTank.getX(),currentTank.getY()-100);</span>
+<span class="fc" id="L323">            line(currentTank.getX(),currentTank.getY()-50, (int)((currentTank.getX())-20*sin((float) Math.PI/6)),(int)((currentTank.getY()-50)-20*cos((float) Math.PI/6)));</span>
+<span class="fc" id="L324">            line(currentTank.getX(),currentTank.getY()-50, (int)((currentTank.getX())+20*sin((float) Math.PI/6)),(int)((currentTank.getY()-50)-20*cos((float) Math.PI/6)));</span>
+<span class="fc" id="L325">            arrowTimer +=1;</span>
+        }
+
+<span class="fc" id="L328">    }</span>
+
+    public void inGameScoreboard(){
+<span class="fc" id="L331">        stroke(0,0,0);</span>
+<span class="fc" id="L332">        strokeWeight(3);</span>
+<span class="fc" id="L333">        fill(0);</span>
+<span class="fc" id="L334">        line(WIDTH*0.82F,HEIGHT*0.10F,WIDTH*0.99F,HEIGHT*0.10F);</span>
+<span class="fc" id="L335">        text(&quot;Scores&quot;,WIDTH*0.82F + 4,HEIGHT*0.10F+16);</span>
+<span class="fc" id="L336">        line(WIDTH*0.82F,HEIGHT*0.13F,WIDTH*0.99F,HEIGHT*0.13F);</span>
+<span class="fc" id="L337">        float textX = WIDTH*0.82F+4;</span>
+<span class="fc" id="L338">        float textY = HEIGHT*0.13F+16;</span>
+
+<span class="fc" id="L340">        drawPlayerIterator = currentPlayingLevel.getPlayerTurn().iterator();</span>
+
+<span class="fc bfc" id="L342" title="All 2 branches covered.">        while(drawPlayerIterator.hasNext()){</span>
+<span class="fc" id="L343">            fill(0);</span>
+<span class="fc" id="L344">            Player p = players.get(drawPlayerIterator.next());</span>
+<span class="fc" id="L345">            text(p.getScore(),textX+100,textY);</span>
+<span class="fc" id="L346">            text(p.getScore(),textX+100,textY);</span>
+<span class="fc" id="L347">            fill(p.rgbColors[0],p.rgbColors[1],p.rgbColors[2]);</span>
+<span class="fc" id="L348">            text(&quot;Player &quot; + p.playerChar,textX,textY);</span>
+<span class="fc" id="L349">            textY +=20;</span>
+<span class="fc" id="L350">        }</span>
+
+<span class="fc" id="L352">        line(WIDTH*0.82F,textY-16,WIDTH*0.99F,textY-16);</span>
+<span class="fc" id="L353">        line(WIDTH*0.82F,HEIGHT*0.10F,WIDTH*0.82F,textY-16);</span>
+<span class="fc" id="L354">        line(WIDTH*0.99F,HEIGHT*0.10F,WIDTH*0.99F,textY-16);</span>
+
+<span class="fc" id="L356">    }</span>
+
+    private void finalScoreboard() {
+<span class="nc" id="L359">        List&lt;Map.Entry&lt;Character, Player&gt;&gt; list = new ArrayList&lt;&gt;(players.entrySet());</span>
+<span class="nc" id="L360">        Comparator&lt;Map.Entry&lt;Character, Player&gt;&gt; comparator = (entry1,entry2) -&gt; entry2.getValue().getScore() - entry1.getValue().getScore();</span>
+
+<span class="nc" id="L362">        list.sort(comparator);</span>
+<span class="nc" id="L363">        LinkedHashMap&lt;Character, Player&gt; sortedHashMap = new LinkedHashMap&lt;&gt;();</span>
+
+<span class="nc bnc" id="L365" title="All 2 branches missed.">        for (Map.Entry&lt;Character, Player&gt; entry : list) {</span>
+<span class="nc" id="L366">            sortedHashMap.put(entry.getKey(), entry.getValue());</span>
+<span class="nc" id="L367">        }</span>
+
+<span class="nc" id="L369">        Character firstPlayer = sortedHashMap.keySet().iterator().next();</span>
+<span class="nc" id="L370">        Player pWon = sortedHashMap.get(firstPlayer);</span>
+
+<span class="nc" id="L372">        textSize(20);</span>
+<span class="nc" id="L373">        strokeWeight(2);</span>
+<span class="nc" id="L374">        fill(pWon.rgbColors[0],pWon.rgbColors[1],pWon.rgbColors[2]);</span>
+<span class="nc" id="L375">        text(&quot;Player &quot; + firstPlayer + &quot; wins!&quot;,350,125);</span>
+
+<span class="nc" id="L377">        int tableHeight = 25*(players.size()+1);</span>
+<span class="nc" id="L378">        int tableWidth = 300;</span>
+<span class="nc" id="L379">        stroke(0);</span>
+<span class="nc" id="L380">        strokeWeight(2);</span>
+<span class="nc" id="L381">        fill(pWon.rgbColors[0],pWon.rgbColors[1],pWon.rgbColors[2],50);</span>
+<span class="nc" id="L382">        rect(275,150,tableWidth,tableHeight);</span>
+
+<span class="nc" id="L384">        fill(0);</span>
+<span class="nc" id="L385">        text(&quot;Final Scores&quot;,285,172);</span>
+<span class="nc" id="L386">        line(275,178,275+tableWidth,178);</span>
+
+<span class="nc" id="L388">        int drawStartX = 285;</span>
+<span class="nc" id="L389">        int drawStartY = 200;</span>
+
+<span class="nc" id="L391">        Iterator&lt;Player&gt; iterator = sortedHashMap.values().iterator();</span>
+<span class="nc" id="L392">        ArrayList&lt;Player&gt; drawPlayers = new ArrayList&lt;&gt;(sortedHashMap.values());</span>
+
+<span class="nc" id="L394">        Player drawThisPlayerNext = iterator.next();</span>
+<span class="nc" id="L395">        drawPlayers.add(drawThisPlayerNext);</span>
+
+<span class="nc bnc" id="L397" title="All 2 branches missed.">        for(int i = 0; i&lt;= playerIndex; i++) {</span>
+<span class="nc" id="L398">            Player p = drawPlayers.get(i);</span>
+<span class="nc" id="L399">            fill(p.rgbColors[0],p.rgbColors[1],p.rgbColors[2]);</span>
+<span class="nc" id="L400">            text(&quot;Player &quot; + p.playerChar,drawStartX,drawStartY);</span>
+<span class="nc" id="L401">            fill(0);</span>
+<span class="nc" id="L402">            text(p.getScore(),drawStartX+235,drawStartY);</span>
+<span class="nc" id="L403">            drawStartY +=20;</span>
+        }
+
+<span class="nc" id="L406">        finalScoreBoardDelayTimer++;</span>
+<span class="nc bnc" id="L407" title="All 2 branches missed.">        if(finalScoreBoardDelayTimer &gt;FPS*0.8){</span>
+<span class="nc" id="L408">            finalScoreBoardDelayTimer =0;</span>
+<span class="nc bnc" id="L409" title="All 2 branches missed.">            if(playerIndex &lt;players.size()-1){</span>
+<span class="nc" id="L410">                playerIndex = playerIndex +1;</span>
+            }
+        }
+
+<span class="nc" id="L414">    }</span>
+
+    private void changePlayerTurn() {
+<span class="nc" id="L417">        arrowTimer = 0;</span>
+<span class="nc" id="L418">        int index = 0;</span>
+        while(true){
+
+<span class="nc bnc" id="L421" title="All 2 branches missed.">            if(!playerListiterator.hasNext()){</span>
+<span class="nc" id="L422">                playerListiterator = playerList.listIterator();</span>
+            }
+
+<span class="nc bnc" id="L425" title="All 2 branches missed.">            if(currentPlayingLevel.getPlayerTanks().get(playerListiterator.next()).isActive()){</span>
+<span class="nc" id="L426">                currentPlayer = playerListiterator.previous();</span>
+<span class="nc" id="L427">                break;</span>
+            }
+
+<span class="nc bnc" id="L430" title="All 2 branches missed.">            if(index ++&gt; players.size()*3){</span>
+<span class="nc" id="L431">                break;</span>
+            }
+        }
+
+<span class="nc bnc" id="L435" title="All 2 branches missed.">        if(playerListiterator.hasNext()){</span>
+<span class="nc" id="L436">            currentPlayer = playerListiterator.next();</span>
+<span class="nc" id="L437">            currentPlayingLevel.setWind(currentPlayingLevel.getWind());</span>
+<span class="nc" id="L438">            currentTank = currentPlayingLevel.getPlayerTanks().get(currentPlayer);</span>
+        }
+
+<span class="nc" id="L441">    }</span>
+
+    private void changeLevel() {
+<span class="nc" id="L444">        currentLevel +=1;</span>
+<span class="nc" id="L445">        currentPlayingLevel = levels.get(currentLevel);</span>
+<span class="nc" id="L446">        playerListiterator = playerList.listIterator();</span>
+<span class="nc" id="L447">        currentPlayer = playerListiterator.next();</span>
+<span class="nc" id="L448">        arrowTimer =0;</span>
+<span class="nc" id="L449">        finalScoreBoardDelayTimer =0;</span>
+<span class="nc" id="L450">        levelDelayTimer =0;</span>
+<span class="nc" id="L451">        isLevelOver = false;</span>
+
+<span class="nc" id="L453">    }</span>
+
+    private void restartGame() {
+<span class="nc bnc" id="L456" title="All 2 branches missed.">        for (Level l : levels){</span>
+<span class="nc" id="L457">            l.restartLevel();</span>
+<span class="nc" id="L458">        }</span>
+
+<span class="nc bnc" id="L460" title="All 2 branches missed.">        for(Player p : players.values()){</span>
+<span class="nc" id="L461">            p.resetPlayer();</span>
+<span class="nc" id="L462">        }</span>
+
+<span class="nc" id="L464">        currentLevel=0;</span>
+<span class="nc" id="L465">        arrowTimer =0;</span>
+<span class="nc" id="L466">        finalScoreBoardDelayTimer =0;</span>
+<span class="nc" id="L467">        levelDelayTimer =0;</span>
+<span class="nc" id="L468">        playerIndex = 0;</span>
+<span class="nc" id="L469">        currentPlayingLevel = levels.get(currentLevel);</span>
+<span class="nc" id="L470">        playerListiterator = playerList.listIterator();</span>
+<span class="nc" id="L471">        currentPlayer = playerListiterator.next();</span>
+<span class="nc" id="L472">        isGameOver = false;</span>
+<span class="nc" id="L473">        isLevelOver = false;</span>
+
+<span class="nc" id="L475">    }</span>
+
+    public static int[] setRBGValues(String input){
+<span class="fc" id="L478">        int[] rgbValues = new int[3];</span>
+<span class="pc bpc" id="L479" title="1 of 2 branches missed.">        if(input.equals(&quot;random&quot;)){</span>
+<span class="nc" id="L480">            rgbValues[0] = rand.nextInt(256);</span>
+<span class="nc" id="L481">            rgbValues[1] = rand.nextInt(256);</span>
+<span class="nc" id="L482">            rgbValues[2] = rand.nextInt(256);</span>
+        } else {
+<span class="fc" id="L484">            String[] rgbStringValues = input.split(&quot;,&quot;);</span>
+<span class="fc" id="L485">            rgbValues[0] = Integer.parseInt(rgbStringValues[0]);</span>
+<span class="fc" id="L486">            rgbValues[1] = Integer.parseInt(rgbStringValues[1]);</span>
+<span class="fc" id="L487">            rgbValues[2] = Integer.parseInt(rgbStringValues[2]);</span>
+        }
+<span class="fc" id="L489">        return rgbValues;</span>
+
+    }
+
+    public static void main(String[] args) {
+<span class="nc" id="L494">        PApplet.main(&quot;Tanks.App&quot;);</span>
+<span class="nc" id="L495">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

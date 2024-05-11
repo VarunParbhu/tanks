@@ -24,6 +24,7 @@ public class Tree extends LevelObject{
      *
      * @param app The window to draw onto
      */
+    @Override
     public void draw(App app){
         app.image(level.getTreesSprite(),x-16,y-32);
         int [] height = level.getHeight();
