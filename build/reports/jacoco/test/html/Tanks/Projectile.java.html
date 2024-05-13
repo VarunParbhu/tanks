@@ -3,158 +3,178 @@
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
+/**
+ * Represents the Projectiles of a level generated from Tanks.
+ */
 public class Projectile extends LevelObject implements Explosion{
-    public Tank tank;
 
+    public Tank tank;
     private final Level level;
     private final int wind;
-
-<span class="nc" id="L12">    private boolean exploded = false;</span>
-<span class="nc" id="L13">    private boolean collided = false;</span>
-
+<span class="fc" id="L14">    private boolean exploded = false;</span>
+<span class="fc" id="L15">    private boolean collided = false;</span>
     private float xPos;
     private float yPos;
     private float dx;
     private float dy;
     private int [] height;
-<span class="nc" id="L20">    private int explodingRadius = 30;</span>
-<span class="nc" id="L21">    private int radius =0;</span>
+<span class="fc" id="L21">    private int explodingRadius = 30;</span>
+<span class="fc" id="L22">    private int radius =0;</span>
 
+    /**
+     * Creates a projectile by associating the Level it belongs to, the Tank that fired the projectile and the Wind when shot.
+     * The projectile size is first check by verifying whether the player bought a big projectile during their turn.
+     * The initial positioning and velocity of the projectile is determined by considering the power of the tank and its turret positioning.
+     *
+     * @param l
+     *      Level Object that the projectile belongs to.
+     * @param t
+     *      Tank Object that created the projectile.
+     * @param wind
+     *      Wind value at the moment the projectile was fired.
+     */
     public Projectile(Level l,Tank t,int wind){
-<span class="nc" id="L24">        super(l,t.getX(),t.getY()-6);</span>
-<span class="nc" id="L25">        level = l;</span>
-<span class="nc" id="L26">        tank = t;</span>
+<span class="fc" id="L37">        super(l,t.getX(),t.getY()-6);</span>
+<span class="fc" id="L38">        level = l;</span>
+<span class="fc" id="L39">        tank = t;</span>
 
-<span class="nc bnc" id="L28" title="All 2 branches missed.">        if(t.player.isBigProjectile()){</span>
-<span class="nc" id="L29">            this.explodingRadius *=2;</span>
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">        if(t.player.isBigProjectile()){</span>
+<span class="nc" id="L42">            this.explodingRadius *=2;</span>
         }
 
-<span class="nc" id="L32">        double power = 1 + (t.getPower()/100.0) * 8;</span>
-<span class="nc" id="L33">        double angle = t.getAngle();</span>
-<span class="nc" id="L34">        this.wind = wind;</span>
-<span class="nc" id="L35">        xPos = (float)t.getX() + (float)(10*sin(t.getAngle()));</span>
-<span class="nc" id="L36">        yPos = (float)t.getY() + (float)(10*cos(t.getAngle())) - 6;</span>
+<span class="fc" id="L45">        double power = 1 + (t.getPower()/100.0) * 8;</span>
+<span class="fc" id="L46">        double angle = t.getAngle();</span>
+<span class="fc" id="L47">        this.wind = wind;</span>
+<span class="fc" id="L48">        xPos = (float)t.getX() + (float)(10*sin(t.getAngle()));</span>
+<span class="fc" id="L49">        yPos = (float)t.getY() + (float)(10*cos(t.getAngle())) - 6;</span>
 
-<span class="nc" id="L38">        dx = (float)((power *sin(angle)));</span>
-<span class="nc" id="L39">        dy = (float)((power *cos(angle)));</span>
+<span class="fc" id="L51">        dx = (float)((power *sin(angle)));</span>
+<span class="fc" id="L52">        dy = (float)((power *cos(angle)));</span>
 
-<span class="nc" id="L41">    }</span>
+<span class="fc" id="L54">    }</span>
 
+    @Override
     public int getRadius(){
-<span class="nc" id="L44">        return radius;</span>
+<span class="fc" id="L58">        return radius;</span>
     }
 
+    @Override
     public int getExplodingRadius(){
-<span class="nc" id="L48">        return explodingRadius;</span>
+<span class="fc" id="L63">        return explodingRadius;</span>
     }
 
-    public boolean getExploded(){
-<span class="nc" id="L52">        return exploded;</span>
+    private boolean getExploded(){
+<span class="fc" id="L67">        return exploded;</span>
     }
 
-    public boolean getCollided(){
-<span class="nc" id="L56">        return collided;</span>
+    private boolean getCollided(){
+<span class="fc" id="L71">        return collided;</span>
     }
 
-    public void move(){
-<span class="nc bnc" id="L60" title="All 6 branches missed.">        if(x&lt;-5 || x&gt;= App.WIDTH+5 || y&gt;=App.HEIGHT+5){</span>
-<span class="nc" id="L61">            setInActive();</span>
+    private void move(){
+<span class="pc bpc" id="L75" title="1 of 6 branches missed.">        if(x&lt;-5 || x&gt;= App.WIDTH+5 || y&gt;=App.HEIGHT+5){</span>
+<span class="fc" id="L76">            setInActive();</span>
         } else {
-<span class="nc bnc" id="L63" title="All 2 branches missed.">            if (!collided) {</span>
-<span class="nc" id="L64">                xPos += dx;</span>
-<span class="nc" id="L65">                yPos += dy;</span>
-<span class="nc" id="L66">                dx += (float) (wind * 0.03) / App.FPS;</span>
-<span class="nc" id="L67">                dy += (float) 3.6 / App.FPS;</span>
-<span class="nc" id="L68">                x = (int) xPos;</span>
-<span class="nc" id="L69">                y = (int) yPos;</span>
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">            if (!collided) {</span>
+<span class="fc" id="L79">                xPos += dx;</span>
+<span class="fc" id="L80">                yPos += dy;</span>
+<span class="fc" id="L81">                dx += (float) (wind * 0.03) / App.FPS;</span>
+<span class="fc" id="L82">                dy += (float) 3.6 / App.FPS;</span>
+<span class="fc" id="L83">                x = (int) xPos;</span>
+<span class="fc" id="L84">                y = (int) yPos;</span>
             }
             // check if collision happens
-<span class="nc" id="L72">            height = level.getHeight();</span>
-<span class="nc bnc" id="L73" title="All 4 branches missed.">            if (((int) Math.floor(xPos)) &gt;= 0 &amp;&amp; ((int) Math.floor(xPos)) &lt; App.WIDTH)</span>
-<span class="nc bnc" id="L74" title="All 2 branches missed.">                if (height[(int) Math.floor(xPos)] - yPos &lt; 0) {</span>
-<span class="nc" id="L75">                    collided = true;</span>
+<span class="fc" id="L87">            height = level.getHeight();</span>
+<span class="pc bpc" id="L88" title="1 of 4 branches missed.">            if (((int) Math.floor(xPos)) &gt;= 0 &amp;&amp; ((int) Math.floor(xPos)) &lt; App.WIDTH)</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">                if (height[(int) Math.floor(xPos)] - yPos &lt; 0) {</span>
+<span class="fc" id="L90">                    collided = true;</span>
                 }
         }
-<span class="nc" id="L78">    }</span>
+<span class="fc" id="L93">    }</span>
 
-    //get height of level and set level here
-
+    @Override
     public void explode(){
-<span class="nc bnc" id="L83" title="All 2 branches missed.">        if (!exploded) {</span>
-<span class="nc" id="L84">            radius += 5 *(explodingRadius/30);</span>
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">        if (!exploded) {</span>
+<span class="fc" id="L98">            radius += 5 *(explodingRadius/30);</span>
         }
-<span class="nc bnc" id="L86" title="All 2 branches missed.">        if (radius &gt;explodingRadius){</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        if (radius &gt;explodingRadius){</span>
 
-<span class="nc bnc" id="L88" title="All 2 branches missed.">            for (Tank t : level.getPlayerTanks().values()){</span>
-<span class="nc" id="L89">                double distanceFromTank = Math.sqrt(Math.pow(t.getX() - xPos, 2) + Math.pow(t.getY() - yPos, 2));</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">            for (Tank t : level.getPlayerTanks().values()){</span>
+<span class="fc" id="L103">                double distanceFromTank = Math.sqrt(Math.pow(t.getX() - xPos, 2) + Math.pow(t.getY() - yPos, 2));</span>
 
-<span class="nc bnc" id="L91" title="All 2 branches missed.">                if (distanceFromTank &lt;= explodingRadius) {</span>
-<span class="nc" id="L92">                    int damageCause = (int) (((explodingRadius - distanceFromTank) / explodingRadius) * 60);</span>
-<span class="nc bnc" id="L93" title="All 2 branches missed.">                    if(!t.equals(tank)) {</span>
-<span class="nc" id="L94">                        t.setHealth(-1*damageCause);</span>
-<span class="nc" id="L95">                        tank.player.setScore(damageCause);</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">                if (distanceFromTank &lt;= explodingRadius) {</span>
+<span class="fc" id="L106">                    int damageCause = (int) (((explodingRadius - distanceFromTank) / explodingRadius) * 60);</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">                    if(!t.equals(tank)) {</span>
+<span class="fc" id="L108">                        t.setHealth(-1*damageCause);</span>
+<span class="fc" id="L109">                        tank.player.setScore(damageCause);</span>
                     } else {
-<span class="nc" id="L97">                        t.setHealth(-1*damageCause);</span>
+<span class="fc" id="L111">                        t.setHealth(-1*damageCause);</span>
                     }
                 }
-<span class="nc" id="L100">            }</span>
-<span class="nc" id="L101">            exploded = true;</span>
+<span class="fc" id="L114">            }</span>
+<span class="fc" id="L115">            exploded = true;</span>
         }
-<span class="nc" id="L103">    }</span>
+<span class="fc" id="L117">    }</span>
 
-    //change height of level
+    private void levelTerrain() {
+<span class="fc" id="L120">        height = level.getHeight();</span>
+<span class="fc" id="L121">        int xcoordinate = (int)Math.floor(xPos);</span>
+<span class="fc" id="L122">        int ycoordinate = (int)Math.floor(yPos);</span>
 
-    public void levelTerrain() {
-<span class="nc" id="L108">        height = level.getHeight();</span>
-<span class="nc" id="L109">        int xcoordinate = (int)Math.floor(xPos);</span>
-<span class="nc" id="L110">        int ycoordinate = (int)Math.floor(yPos);</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        for(int i=xcoordinate-explodingRadius;i&lt;xcoordinate+explodingRadius;i++){</span>
+<span class="pc bpc" id="L125" title="2 of 4 branches missed.">            if(i&gt;0 &amp;&amp; i&lt;height.length){</span>
+<span class="fc" id="L126">                double heightCircle = Math.sqrt(Math.pow(explodingRadius, 2.0) - Math.pow(xcoordinate - i, 2.0));</span>
 
-<span class="nc bnc" id="L112" title="All 2 branches missed.">        for(int i=xcoordinate-explodingRadius;i&lt;xcoordinate+explodingRadius;i++){</span>
-<span class="nc bnc" id="L113" title="All 4 branches missed.">            if(i&gt;0 &amp;&amp; i&lt;height.length){</span>
-<span class="nc" id="L114">                double heightCircle = Math.sqrt(Math.pow(explodingRadius, 2.0) - Math.pow(xcoordinate - i, 2.0));</span>
+<span class="fc" id="L128">                int ycoordinateA = ycoordinate -  (int) heightCircle;</span>
+<span class="fc" id="L129">                int ycoordinateB = ycoordinate +  (int) heightCircle;</span>
+<span class="fc" id="L130">                int currentHeight = height[i];</span>
 
-<span class="nc" id="L116">                int ycoordinateA = ycoordinate -  (int) heightCircle;</span>
-<span class="nc" id="L117">                int ycoordinateB = ycoordinate +  (int) heightCircle;</span>
-<span class="nc" id="L118">                int currentHeight = height[i];</span>
-
-<span class="nc bnc" id="L120" title="All 2 branches missed.">                if (currentHeight&lt;=ycoordinateA){</span>
-<span class="nc" id="L121">                    height[i] = ycoordinateB - (ycoordinateA-currentHeight);</span>
-<span class="nc bnc" id="L122" title="All 2 branches missed.">                } else if (currentHeight&lt;=ycoordinateB){</span>
-<span class="nc" id="L123">                    height[i] = ycoordinateB;</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">                if (currentHeight&lt;=ycoordinateA){</span>
+<span class="fc" id="L133">                    height[i] = ycoordinateB - (ycoordinateA-currentHeight);</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">                } else if (currentHeight&lt;=ycoordinateB){</span>
+<span class="fc" id="L135">                    height[i] = ycoordinateB;</span>
                 }
             }
         }
+<span class="fc" id="L139">        level.setHeight(height);</span>
 
-<span class="nc" id="L128">        level.setHeight(height);</span>
+<span class="fc" id="L141">    }</span>
 
-<span class="nc" id="L130">    }</span>
-
+    /**
+     * Draws the projectile object on the screen at the defined position and continuously move them.
+     * Projectile is made up of a coloured circle (same as character) and a black dot.
+     * Projectile activity is checked first before drawing.
+     * Terrain is leveled as soon as explosion animation is done.
+     * @param app
+     *      The window to draw onto
+     */
+    @Override
     public void draw(App app){
-<span class="nc" id="L133">        int [] playerRGG = tank.player.rgbColors;</span>
-<span class="nc bnc" id="L134" title="All 2 branches missed.">        if(isActive()){</span>
-<span class="nc bnc" id="L135" title="All 2 branches missed.">            if(!getExploded()){</span>
-<span class="nc bnc" id="L136" title="All 2 branches missed.">                if(!getCollided()){</span>
+<span class="fc" id="L153">        int [] playerRGG = tank.player.rgbColors;</span>
+<span class="pc bpc" id="L154" title="1 of 2 branches missed.">        if(isActive()){</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">            if(!getExploded()){</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">                if(!getCollided()){</span>
 
-<span class="nc" id="L138">                    app.fill(playerRGG[0],playerRGG[1],playerRGG[2]);</span>
-<span class="nc" id="L139">                    app.stroke(playerRGG[0],playerRGG[1],playerRGG[2]);</span>
-<span class="nc" id="L140">                    app.ellipse(getX(),getY(),5,5);</span>
+<span class="fc" id="L158">                    app.fill(playerRGG[0],playerRGG[1],playerRGG[2]);</span>
+<span class="fc" id="L159">                    app.stroke(playerRGG[0],playerRGG[1],playerRGG[2]);</span>
+<span class="fc" id="L160">                    app.ellipse(getX(),getY(),5,5);</span>
 
-<span class="nc" id="L142">                    app.fill(0,0,0);</span>
-<span class="nc" id="L143">                    app.stroke(0,0,0);</span>
-<span class="nc" id="L144">                    app.ellipse(getX(),getY(),1,1);</span>
+<span class="fc" id="L162">                    app.fill(0,0,0);</span>
+<span class="fc" id="L163">                    app.stroke(0,0,0);</span>
+<span class="fc" id="L164">                    app.ellipse(getX(),getY(),1,1);</span>
 
-<span class="nc" id="L146">                    move();</span>
+<span class="fc" id="L166">                    move();</span>
 
                 } else {
-<span class="nc" id="L149">                    explodeLevelObject(app,this);</span>
+<span class="fc" id="L169">                    explodeLevelObject(app,this);</span>
 
                 }
             } else {
-<span class="nc" id="L153">                levelTerrain();</span>
-<span class="nc" id="L154">                setInActive();</span>
+<span class="fc" id="L173">                levelTerrain();</span>
+<span class="fc" id="L174">                setInActive();</span>
             }
         }
-<span class="nc" id="L157">    }</span>
+<span class="fc" id="L177">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

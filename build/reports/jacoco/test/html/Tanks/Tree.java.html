@@ -8,13 +8,16 @@ public class Tree extends LevelObject{
 
     /**
      * Creates a new tree belonging a certain level inheriting from the LevelObject.
-     * @param level The level the tree belongs to.
-     * @param x The x-coordinate of the tree position.
-     * @param y The x-coordinate of the tree position.
+     * @param level
+     *      The level the tree belongs to.
+     * @param x
+     *      The x-coordinate of the tree position.
+     * @param y
+     *      The x-coordinate of the tree position.
      */
-    public Tree (Level level, Integer x, Integer y){
-<span class="fc" id="L16">        super(level,x,y);</span>
-<span class="fc" id="L17">    }</span>
+    public Tree (Level level, int x, int y){
+<span class="fc" id="L19">        super(level,x,y);</span>
+<span class="fc" id="L20">    }</span>
 
     /**
      * Draws the tree object on the screen at the defined position.
@@ -22,15 +25,17 @@ public class Tree extends LevelObject{
      * The center of the tree is offsetted from the top right corner of the image to the middle-bottom position where the trunk begins in the sprite.
      * If the height of the terrain is different from the y-coordinate of the tree, the position is changed to the height of the terrain at position x.
      *
-     * @param app The window to draw onto
+     * @param app
+     *      The window to draw onto
      */
+    @Override
     public void draw(App app){
-<span class="fc" id="L28">        app.image(level.getTreesSprite(),x-16,y-32);</span>
-<span class="fc" id="L29">        int [] height = level.getHeight();</span>
-<span class="pc bpc" id="L30" title="1 of 2 branches missed.">        if(height[x]&gt;y) {</span>
-<span class="nc" id="L31">            this.y = height[x];</span>
+<span class="fc" id="L33">        app.image(level.getTreesSprite(),x-16,y-32);</span>
+<span class="fc" id="L34">        int [] height = level.getHeight();</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        if(height[x]&gt;y) {</span>
+<span class="fc" id="L36">            this.y = height[x];</span>
         }
-<span class="fc" id="L33">    }</span>
+<span class="fc" id="L38">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

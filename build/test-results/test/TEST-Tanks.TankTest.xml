@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Tanks.TankTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2024-05-12T09:44:09" hostname="Murphys-MacBook-Air.local" time="17.624">
+  <properties/>
+  <testcase name="moveTankLeftEdge()" classname="Tanks.TankTest" time="1.028"/>
+  <testcase name="largeProjectile()" classname="Tanks.TankTest" time="1.135"/>
+  <testcase name="moveTurretRight()" classname="Tanks.TankTest" time="1.14"/>
+  <testcase name="increasePower()" classname="Tanks.TankTest" time="1.141"/>
+  <testcase name="moveTankLeft()" classname="Tanks.TankTest" time="1.16"/>
+  <testcase name="repairKit()" classname="Tanks.TankTest" time="1.544"/>
+  <testcase name="decreasePower()" classname="Tanks.TankTest" time="1.398"/>
+  <testcase name="moreFuel()" classname="Tanks.TankTest" time="1.614"/>
+  <testcase name="moveTankRightEdge()" classname="Tanks.TankTest" time="1.607"/>
+  <testcase name="additionalParachute()" classname="Tanks.TankTest" time="1.945"/>
+  <testcase name="moveTurretLeft()" classname="Tanks.TankTest" time="2.008"/>
+  <testcase name="moveTankRight()" classname="Tanks.TankTest" time="1.892"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

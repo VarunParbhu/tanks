@@ -5,32 +5,35 @@ import processing.core.PImage;
 import processing.data.JSONArray;
 import processing.data.JSONObject;
 import processing.event.KeyEvent;
-
 import java.util.*;
 
+/**
+ * Represents game application as an extension of the PApplet object.
+ * It mainly setups all the resources required for the game, draws the level continuously, updates the UI, checking player and game state, and processing input from players.
+ */
 public class App extends PApplet {
 
-    public static int WIDTH = 864;
+    public static int WIDTH = 864; //Width of application
     public static int HEIGHT = 640;
 
     public static final int SMOOTHING_AVG = 32;
     public static final int INITIAL_PARACHUTES = 3;
     public static final int FPS = 60;
 
-    public static String configPath;
+    private static String configPath;
     public static JSONObject playerColoursConfig;
-    public static PImage fuelCanImg = null;
+    private static PImage fuelCanImg = null;
     public static PImage parachuteImg = null;
-    public static PImage bigboiImg = null;
-    public static PImage windRightImg = null;
-    public static PImage windLeftImg = null;
+    private static PImage bigboiImg = null;
+    private static PImage windRightImg = null;
+    private static PImage windLeftImg = null;
     public static Map<Character,Player> players = new HashMap<>();
-    public static int arrowTimer =0;
-    public static int finalScoreBoardDelayTimer =0;
-    public static int levelDelayTimer =0;
-    public static int playerIndex = 0;
-    public static boolean isGameOver = false;
-    public static boolean isLevelOver = false;
+    private static int arrowTimer =0;
+    private static int finalScoreBoardDelayTimer =0;
+    private static int levelDelayTimer =0;
+    private static int playerIndex = 0;
+    private static boolean isGameOver = false;
+    private static boolean isLevelOver = false;
     private static final Random rand = new Random();
 
     public int currentLevel = 0;
@@ -39,12 +42,9 @@ public class App extends PApplet {
     public Iterator<Character> playerIterator = null;
     public Iterator<Character> drawPlayerIterator = null;
     public ListIterator<Character> playerListiterator = null;
-    public List<Character> playerList =new ArrayList<>();;
+    public List<Character> playerList =new ArrayList<>();
     public Character currentPlayer = null;
     public Tank currentTank = null;
-
-
-
 
     /**
      * Loads all the configuration required by the application
@@ -121,22 +121,21 @@ public class App extends PApplet {
     }
 
     /**
-     * Receive key pressed signal from the keyboard.
+     * Receive key pressed signal from the keyboard.<p>
+     * Spacebar: 32 - Shots projectile or changes level at the end the latter <p>
+     * Left: 37 - Moves tank to the left <p>
+     * Up: 38 - Moves turret to the left <p>
+     * Right: 39 - Moves tank to the right <p>
+     * Down: 40 - Moves turret to the right <p>
+     * W: 87 - Increases power of tank <p>
+     * S: 83 - Decreases power of tank <p>
+     * P: 80 - Increments player parachute by 1 <p>
+     * X: 88 - Triggers larger projectile for a player's next shot <p>
+     * R: 82 - Restores a player's health by 20 or restarts the game at the end <p>
+     * F: 70 - Increments player fuel by 200
      */
 	@Override
     public void keyPressed(KeyEvent event){
-        // Spacebar: 32
-        // Left: 37
-        // Up: 38
-        // Right: 39
-        // Down: 40
-        // W: 87
-        // S: 83
-        // P: 80
-        // X: 88
-        // R: 82
-        // F: 70
-
         //Spacebar
         if (this.keyCode==32){
             if (currentTank.isActive()){
@@ -315,7 +314,7 @@ public class App extends PApplet {
 
     }
 
-    public void playerArrow(){
+    private void playerArrow(){
         stroke(0,0,0);
         strokeWeight(2);
         if(arrowTimer <FPS*2 && !isLevelOver && !isGameOver){
@@ -327,7 +326,7 @@ public class App extends PApplet {
 
     }
 
-    public void inGameScoreboard(){
+    private void inGameScoreboard(){
         stroke(0,0,0);
         strokeWeight(3);
         fill(0);
@@ -355,7 +354,7 @@ public class App extends PApplet {
 
     }
 
-    public void finalScoreboard() {
+    private void finalScoreboard() {
         List<Map.Entry<Character, Player>> list = new ArrayList<>(players.entrySet());
         Comparator<Map.Entry<Character, Player>> comparator = (entry1,entry2) -> entry2.getValue().getScore() - entry1.getValue().getScore();
 
@@ -413,7 +412,7 @@ public class App extends PApplet {
 
     }
 
-    public void changePlayerTurn() {
+    private void changePlayerTurn() {
         arrowTimer = 0;
         int index = 0;
         while(true){
@@ -440,7 +439,7 @@ public class App extends PApplet {
 
     }
 
-    public void changeLevel() {
+    private void changeLevel() {
         currentLevel +=1;
         currentPlayingLevel = levels.get(currentLevel);
         playerListiterator = playerList.listIterator();
@@ -474,6 +473,14 @@ public class App extends PApplet {
 
     }
 
+
+    /**
+     * Retrieves the RGB values from a comma delimited string into a list of integer.
+     * @param input
+     *      Comma delimited string to extract the RGB values.
+     * @return
+     *      List of the RGB values.
+     */
     public static int[] setRBGValues(String input){
         int[] rgbValues = new int[3];
         if(input.equals("random")){

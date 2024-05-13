@@ -30,7 +30,6 @@ public abstract class LevelObject{
      */
     protected Player player;
 
-
     /**
      * Creates a new level object with no sprite.
      *
@@ -45,24 +44,24 @@ public abstract class LevelObject{
     }
 
     /**
-     * Gets the x-coordinate.
-     * @return The x-coordinate.
+     * @return
+     *      Returns the x-coordinate of the LevelObject.
      */
     public int getX() {
         return x;
     }
 
     /**
-     * Returns the y-coordinate.
-     * @return The y-coordinate.
+     * @return
+     *      Returns the y-coordinate of the LevelObject.
      */
     public int getY() {
         return y;
     }
 
     /**
-     * Returns the activity.
      * @return active.
+     *      Returns the activity.
      */
     public boolean isActive() {
         return active;
@@ -83,14 +82,17 @@ public abstract class LevelObject{
     }
 
     /**
-     * Set the object's owner.
+     * Associate a player to the LevelObject.
+     * @param player
+     *      Player to associate to.
      */
     public void setPlayer(Player player) {
         this.player = player;
     }
 
     /**
-     * Set the object's owner.
+     * @return
+     *      Get the object's owner.
      */
     public Player getPlayer() {
         return player;

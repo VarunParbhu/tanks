@@ -3,6 +3,9 @@ package Tanks;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
+/**
+ * Represents the Projectiles of a level generated from Tanks.
+ */
 public class Projectile extends LevelObject implements Explosion{
 
     public Tank tank;
@@ -18,6 +21,18 @@ public class Projectile extends LevelObject implements Explosion{
     private int explodingRadius = 30;
     private int radius =0;
 
+    /**
+     * Creates a projectile by associating the Level it belongs to, the Tank that fired the projectile and the Wind when shot.
+     * The projectile size is first check by verifying whether the player bought a big projectile during their turn.
+     * The initial positioning and velocity of the projectile is determined by considering the power of the tank and its turret positioning.
+     *
+     * @param l
+     *      Level Object that the projectile belongs to.
+     * @param t
+     *      Tank Object that created the projectile.
+     * @param wind
+     *      Wind value at the moment the projectile was fired.
+     */
     public Projectile(Level l,Tank t,int wind){
         super(l,t.getX(),t.getY()-6);
         level = l;
@@ -48,15 +63,15 @@ public class Projectile extends LevelObject implements Explosion{
         return explodingRadius;
     }
 
-    public boolean getExploded(){
+    private boolean getExploded(){
         return exploded;
     }
 
-    public boolean getCollided(){
+    private boolean getCollided(){
         return collided;
     }
 
-    public void move(){
+    private void move(){
         if(x<-5 || x>= App.WIDTH+5 || y>=App.HEIGHT+5){
             setInActive();
         } else {
@@ -77,7 +92,6 @@ public class Projectile extends LevelObject implements Explosion{
         }
     }
 
-    //get height of level and set level here
     @Override
     public void explode(){
         if (!exploded) {
@@ -102,9 +116,7 @@ public class Projectile extends LevelObject implements Explosion{
         }
     }
 
-    //change height of level
-
-    public void levelTerrain() {
+    private void levelTerrain() {
         height = level.getHeight();
         int xcoordinate = (int)Math.floor(xPos);
         int ycoordinate = (int)Math.floor(yPos);
@@ -128,6 +140,14 @@ public class Projectile extends LevelObject implements Explosion{
 
     }
 
+    /**
+     * Draws the projectile object on the screen at the defined position and continuously move them.
+     * Projectile is made up of a coloured circle (same as character) and a black dot.
+     * Projectile activity is checked first before drawing.
+     * Terrain is leveled as soon as explosion animation is done.
+     * @param app
+     *      The window to draw onto
+     */
     @Override
     public void draw(App app){
         int [] playerRGG = tank.player.rgbColors;

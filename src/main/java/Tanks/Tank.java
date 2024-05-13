@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
+/**
+ * Represents the Tanks of a level generated from level file based on their initial position.
+ */
 public class Tank extends LevelObject implements Explosion {
     private int health;
     private int fuel;
@@ -16,7 +19,19 @@ public class Tank extends LevelObject implements Explosion {
     private int fallDamage = 0;
     private Projectile opponentP;
 
-
+    /**
+     * Creates a tank by associating the Level it belongs to, the starting x and y position, and the player this tanks belong to.
+     * The health is set at 100, fuel at 250 and power 50 when a new tank is created.
+     *
+     * @param level
+     *      Level Object that the tank belongs to.
+     * @param x
+     *      Initial x-position
+     * @param y
+     *      Initial y-position
+     * @param player
+     *      Player object that the tank belongs to.
+     */
     public Tank (Level level, Integer x, Integer y,Player player){
         super(level,x,y);
         setPlayer(player);
@@ -31,11 +46,9 @@ public class Tank extends LevelObject implements Explosion {
     @Override
     public int getExplodingRadius(){return explosionRadius;}
 
+    private boolean getExploded(){return exploded;}
 
-    public boolean getExploded(){return exploded;}
-
-
-    public void useParachute(){
+    private void useParachute(){
         Player p = App.players.get(player.playerChar);
         p.setParachute(Math.max(p.getParachute() - 1, 0));
     }
@@ -55,10 +68,19 @@ public class Tank extends LevelObject implements Explosion {
         }
     }
 
+    /**
+     * @return
+     *      Remaining fuel of the tank.
+     */
     public int getFuel(){
         return fuel;
     }
 
+    /**
+     * Sets the new fuel value of the
+     * @param fuel
+     *      Value to increase the current fuel by.
+     */
     public void setFuel(int fuel){
         if(this.fuel+fuel>250){
             this.fuel=250;
@@ -67,8 +89,7 @@ public class Tank extends LevelObject implements Explosion {
         }
     }
 
-
-    public void useFuel(){
+    private void useFuel(){
         if(fuel-1<=0){
             fuel=0;
         } else {
@@ -76,12 +97,10 @@ public class Tank extends LevelObject implements Explosion {
         }
     }
 
-    public boolean isFalling(){return isFalling;}
+    private boolean isFalling(){return isFalling;}
 
-    public void falling(){
+    private void falling(){
         int [] height = level.getHeight();
-        // Player p = App.players.get(player.playerChar);
-        // set which projectile caused the fall
         if(y<0){
             y=0;
         } else if (y>=App.HEIGHT){
@@ -97,7 +116,7 @@ public class Tank extends LevelObject implements Explosion {
         }
     }
 
-    public void fall(){
+    private void fall(){
         if(y < level.getHeight()[x]){
             isFalling=true;
             //get the last inactive projectile
@@ -130,6 +149,12 @@ public class Tank extends LevelObject implements Explosion {
         }
     }
 
+    /**
+     * Sets the new value x-coordinate of the Tank and adjust to the corresponding terrain height.
+     * Prevents tank from moving off a cliff and go outside the playing terrain.
+     * @param x
+     *      x-coordinate the tank moves to.
+     */
     public void setX(int x){
         if(!isFalling) {
             if (x < 0) {
@@ -147,10 +172,19 @@ public class Tank extends LevelObject implements Explosion {
         }
     }
 
+    /**
+     * @return
+     *      Angle of the turret
+     */
     public double getAngle(){
         return angle;
     }
 
+    /**
+     * Sets the angle of the turret.
+     * @param angle
+     *      Value to set the angle to.
+     */
     public void setAngle(double angle){
         if(angle<Math.PI/2){
             this.angle=Math.PI - Math.PI/2;
@@ -161,10 +195,19 @@ public class Tank extends LevelObject implements Explosion {
         }
     }
 
+    /**
+     * @return
+     *      Power of the turret.
+     */
     public double getPower(){
         return power;
     }
 
+    /**
+     * Sets the power of the turret of the tank.
+     * @param power
+     *      Value to set the power to.
+     */
     public void setPower(double power){
         if(power<0){
             this.power=0;
@@ -175,10 +218,19 @@ public class Tank extends LevelObject implements Explosion {
         }
     }
 
+    /**
+     * @return
+     *      Health remaining for the tank.
+     */
     public int getHealth(){
         return health;
     }
 
+    /**
+     * Changes the health of the tank.
+     * @param health
+     *      Amount to change the health by.
+     */
     public void setHealth(int health){
         if(this.health+health<=0){
             this.health=0;
@@ -193,6 +245,15 @@ public class Tank extends LevelObject implements Explosion {
         }
     }
 
+    /**
+     * Draws the tank object on the screen at the defined position.
+     * Tank is made up of a rectangle, semicircle and a line.
+     * Tank activity is checked first before drawing.
+     * Tank parachute is drawn when in use.
+     *
+     * @param app
+     *      The window to draw onto
+     */
     @Override
     public void draw(App app){
         if(getPower()>getHealth()){

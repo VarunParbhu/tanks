@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Tanks.AppTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2024-05-12T09:43:29" hostname="Murphys-MacBook-Air.local" time="40.235">
+  <properties/>
+  <testcase name="levelInitialization()" classname="Tanks.AppTest" time="1.718"/>
+  <testcase name="testingLevelChange()" classname="Tanks.AppTest" time="6.273"/>
+  <testcase name="randomRGBValue()" classname="Tanks.AppTest" time="0.001"/>
+  <testcase name="testingTankFall()" classname="Tanks.AppTest" time="26.982"/>
+  <testcase name="shotProjectile()" classname="Tanks.AppTest" time="1.218"/>
+  <testcase name="collisionProjectile()" classname="Tanks.AppTest" time="4.04"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

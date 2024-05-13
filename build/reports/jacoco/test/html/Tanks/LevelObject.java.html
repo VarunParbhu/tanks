@@ -30,7 +30,6 @@ public abstract class LevelObject{
      */
     protected Player player;
 
-
     /**
      * Creates a new level object with no sprite.
      *
@@ -38,62 +37,65 @@ public abstract class LevelObject{
      * @param x The x-coordinate.
      * @param y The y-coordinate.
      */
-<span class="fc" id="L41">    public LevelObject(Level level,int x, int y) {</span>
-<span class="fc" id="L42">        this.level = level;</span>
-<span class="fc" id="L43">        this.x = x;</span>
-<span class="fc" id="L44">        this.y = y;</span>
-<span class="fc" id="L45">    }</span>
+<span class="fc" id="L40">    public LevelObject(Level level,int x, int y) {</span>
+<span class="fc" id="L41">        this.level = level;</span>
+<span class="fc" id="L42">        this.x = x;</span>
+<span class="fc" id="L43">        this.y = y;</span>
+<span class="fc" id="L44">    }</span>
 
     /**
-     * Gets the x-coordinate.
-     * @return The x-coordinate.
+     * @return
+     *      Returns the x-coordinate of the LevelObject.
      */
     public int getX() {
-<span class="fc" id="L52">        return this.x;</span>
+<span class="fc" id="L51">        return x;</span>
     }
 
     /**
-     * Returns the y-coordinate.
-     * @return The y-coordinate.
+     * @return
+     *      Returns the y-coordinate of the LevelObject.
      */
     public int getY() {
-<span class="fc" id="L60">        return this.y;</span>
+<span class="fc" id="L59">        return y;</span>
     }
 
     /**
-     * Returns the activity.
      * @return active.
+     *      Returns the activity.
      */
     public boolean isActive() {
-<span class="fc" id="L68">        return active;</span>
+<span class="fc" id="L67">        return active;</span>
     }
 
     /**
      * Changes the active to true.
      */
     public void setActive() {
-<span class="nc" id="L75">        active = true;</span>
-<span class="nc" id="L76">    }</span>
+<span class="nc" id="L74">        active = true;</span>
+<span class="nc" id="L75">    }</span>
 
     /**
      * Changes the active to true.
      */
     public void setInActive() {
-<span class="nc" id="L82">        active = false;</span>
-<span class="nc" id="L83">    }</span>
+<span class="fc" id="L81">        active = false;</span>
+<span class="fc" id="L82">    }</span>
 
     /**
-     * Set the object's owner.
+     * Associate a player to the LevelObject.
+     * @param player
+     *      Player to associate to.
      */
     public void setPlayer(Player player) {
-<span class="fc" id="L89">        this.player = player;</span>
-<span class="fc" id="L90">    }</span>
+<span class="fc" id="L90">        this.player = player;</span>
+<span class="fc" id="L91">    }</span>
 
     /**
-     * Set the object's owner.
+     * @return
+     *      Get the object's owner.
      */
     public Player getPlayer() {
-<span class="nc" id="L96">        return player;</span>
+<span class="fc" id="L98">        return player;</span>
     }
 
     /**

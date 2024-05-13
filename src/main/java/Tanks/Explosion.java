@@ -1,17 +1,21 @@
 package Tanks;
 
 /**
- * Represents an interface for LevelObjects that explodes (projectile and tanks).
+ * Represents an interface for LevelObjects that explodes.
  */
 public interface Explosion {
 
     /**
      * The radius of explosion while it is happening.
+     * @return
+     *      Current radius of the explosion.
      */
     int getRadius();
 
     /**
      * The final radius of the explosion.
+     * @return
+     *      Final radius of the explosion.
      */
     int getExplodingRadius();
 
@@ -22,6 +26,10 @@ public interface Explosion {
 
     /**
      * Default method that draws the explosion from start to finish as the radius changes.
+     * @param app
+     *      The window to draw onto.
+     * @param object
+     *      The LevelObject that needs to explode.
      */
     default void explodeLevelObject (App app, LevelObject object){
         app.fill(255,0,0);

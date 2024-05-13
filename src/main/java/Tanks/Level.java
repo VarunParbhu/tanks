@@ -5,6 +5,9 @@ import java.util.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+/**
+ * Represents the level of a game generated from a text file and contains the LevelObjects.
+ */
 public class Level {
 
     private final Random rand = new Random();
@@ -21,58 +24,118 @@ public class Level {
     private final ArrayList<Projectile> projectiles = new ArrayList<>();
     private final Map<Character,Tank> playerTanks = new HashMap<>();
 
+    /**
+     * Takes the file path of the level text file to be created.
+     * @param layoutInput
+     *      File path of the level text file.
+     */
     public void setLayout(String layoutInput) {
         this.layoutInput = layoutInput;
         createLevel();
     }
 
+    /**
+     * Every time a projectile is created, a projectile object is added to the level list of projectile objects to be drawn.
+     * @param projectile
+     *      Projectile object to be drawn in the level
+     */
     public void setProjectiles(Projectile projectile) {
         projectiles.add(projectile);
     }
 
+    /**
+     * @return
+     *      The list of projectile in the level.
+     */
     public ArrayList<Projectile> getProjectiles() {
         return projectiles;
     }
 
+    /**
+     * Changes the wind by a value between -5 and 5 after every player turn by a player.
+     * @param wind
+     *      Old win wind value on the level
+     */
     public void setWind(Integer wind) {
         this.wind = wind + rand.nextInt(11) - 5;
     }
 
+    /**
+     * @return
+     *      Current wind value of the level.
+     */
     public int getWind(){ return wind;}
 
+    /**
+     * Sets up the background image of the level to be used when creating the level.
+     * @param background
+     *      Image for the background.
+     */
     public void setBackground(PImage background) {
         this.background = background;
     }
 
+    /**
+     * Sets up the foreground colour of the level to be used when creating the level.
+     * @param foregroundColour
+     *      Foreground colour of the level.
+     */
     public void setForegroundColour(String foregroundColour) {
         foregroundRGBValues = App.setRBGValues(foregroundColour);
     }
 
+    /**
+     * Sets up the tree image of the level to be used when creating the level and drawing the trees.
+     * @param trees
+     *      Tree image of the level.
+     */
     public void setTreeSprite(PImage trees) {
         treesSprite = trees;
     }
 
+    /**
+     * @return
+     *      Tree image used to draw the trees.
+     */
     public PImage getTreesSprite() {
         return treesSprite;
     }
 
+    /**
+     * @return
+     *      The height of the terrain of the level at each x-coordinates.
+     */
     public int[] getHeight(){
         return height;
     }
 
+    /**
+     * Changes the terrain heights
+     * @param inputHeight
+     *      List of integers representing the height of the terrain at each x-coordinates.
+     */
     public void setHeight(int [] inputHeight) {
         height=inputHeight;
     }
 
+    /**
+     * @return
+     *      A natural ordering of the Character and Tank HashMap, used to create the playerTurn iterator.
+     */
     public TreeSet<Character> getPlayerTurn (){
         return new TreeSet<>(playerTanks.keySet());
     }
 
+    /**
+     * @return
+     *      Tank and their associated Character (player).
+     */
     public Map<Character,Tank> getPlayerTanks(){
         return playerTanks;
     }
 
-    public void createLevel() {
+
+    private void createLevel() {
         // Create a multidimensional array; then sub the values with characters in the file
         // loop through the file and check character at each col
         // record the row and character position
@@ -172,6 +235,9 @@ public class Level {
 
     }
 
+    /**
+     * Restarts a level by resetting the wind,projectiles,tanks,trees and terrain.
+     */
     public void restartLevel(){
         wind = rand.nextInt(71)-35;
         projectiles.clear();
@@ -198,6 +264,11 @@ public class Level {
         return movingAverages;
     }
 
+    /**
+     * Draw all elements in the level by current frame.
+     * @param app
+     *      The window to draw onto.
+     */
     public void draw(App app){
         app.background(background);
         for (int col = 0; col < screenLayout[0].length; col++) {
