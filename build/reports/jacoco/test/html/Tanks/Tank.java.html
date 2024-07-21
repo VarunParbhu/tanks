@@ -105,11 +105,11 @@ public class Tank extends LevelObject implements Explosion {
 <span class="nc" id="L105">            y=0;</span>
 <span class="fc bfc" id="L106" title="All 2 branches covered.">        } else if (y&gt;=App.HEIGHT){</span>
 <span class="fc" id="L107">            y=App.HEIGHT;</span>
-<span class="pc bpc" id="L108" title="1 of 4 branches missed.">        } else if (height[x]&gt;y &amp;&amp; player.getParachute()&gt;0){</span>
+<span class="pc bpc" id="L108" title="2 of 4 branches missed.">        } else if (height[x]&gt;y &amp;&amp; player.getParachute()&gt;0){</span>
 <span class="fc" id="L109">            y += 60/App.FPS;</span>
-<span class="pc bpc" id="L110" title="2 of 4 branches missed.">        } else if (height[x]&gt;y &amp;&amp; player.getParachute()&lt;=0){</span>
-<span class="fc" id="L111">            y += 120/App.FPS;</span>
-<span class="fc" id="L112">            fallDamage += 120/App.FPS;</span>
+<span class="nc bnc" id="L110" title="All 4 branches missed.">        } else if (height[x]&gt;y &amp;&amp; player.getParachute()&lt;=0){</span>
+<span class="nc" id="L111">            y += 120/App.FPS;</span>
+<span class="nc" id="L112">            fallDamage += 120/App.FPS;</span>
 <span class="nc bnc" id="L113" title="All 2 branches missed.">        } else if (height[x]&lt;y){</span>
 <span class="nc" id="L114">            y = height[x];</span>
 <span class="nc" id="L115">            explosionRadius = 30;</span>
@@ -282,7 +282,7 @@ public class Tank extends LevelObject implements Explosion {
 <span class="fc" id="L282">            app.ellipse(getX(), getY() - 6, 6, 6);</span>
 
             // Drawing parachute
-<span class="fc bfc" id="L285" title="All 4 branches covered.">            if (isFalling() &amp;&amp; player.getParachute() &gt; 0) {</span>
+<span class="pc bpc" id="L285" title="1 of 4 branches missed.">            if (isFalling() &amp;&amp; player.getParachute() &gt; 0) {</span>
 <span class="fc" id="L286">                app.image(App.parachuteImg, getX() - 11, getY() - 26);</span>
             }
             // Exploding the tank if below map or health zero

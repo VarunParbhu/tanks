@@ -167,7 +167,6 @@ public class Projectile extends LevelObject implements Explosion{
 
                 } else {
                     explodeLevelObject(app,this);
-
                 }
             } else {
                 levelTerrain();
